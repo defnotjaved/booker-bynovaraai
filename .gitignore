@@ -1,0 +1,22 @@
+node_modules
+.next
+out
+dist
+.env
+.env.local
+.env.*.local
+.vercel
+.playwright-mcp
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Personal machine overrides — never commit
+*.local.md
+.claude/settings.local.json
+CLAUDE.local.md
+
+# OS
+.DS_Store
+Thumbs.db
