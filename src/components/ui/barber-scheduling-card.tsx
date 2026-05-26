@@ -98,7 +98,7 @@ export function BarberSchedulingCard({
           >
             <Scissors size={28} color="var(--accent)" />
           </motion.div>
-          <h3 style={{ fontSize: 22, fontWeight: 900, marginBottom: 10, letterSpacing: "-0.02em" }}>Booking Confirmed!</h3>
+          <h3 style={{ fontSize: 22, fontWeight: 900, marginBottom: 10, letterSpacing: "-0.02em", fontFamily: "var(--font-heading)" }}>Booking Confirmed!</h3>
           <p style={{ color: "var(--ink-3)", marginBottom: 6, fontSize: 15 }}>
             {selectedSlot.dayName}, {selectedSlot.date}{" "}
             <span style={{ color: "var(--accent)", fontWeight: 700 }}>at {selectedSlot.time}</span>
@@ -127,7 +127,7 @@ export function BarberSchedulingCard({
             <Scissors size={18} color="var(--accent)" />
           </div>
           <div style={{ flex: 1 }}>
-            <div style={{ fontWeight: 800, fontSize: 15 }}>Icon Barbers</div>
+            <div style={{ fontWeight: 800, fontSize: 15, fontFamily: "var(--font-heading)" }}>Icon Barbers</div>
             <div style={{ fontSize: 12, color: "var(--ink-3)", marginTop: 1 }}>Aranguez · 5.0 ★ · 174 reviews</div>
           </div>
           <span className="wiz-step-hint">Step {step} of {STEP_LABELS.length}</span>
@@ -162,7 +162,7 @@ export function BarberSchedulingCard({
           {step === 1 && (
             <motion.div key="step1" variants={animate ? slideIn : {}} initial="enter" animate="center" exit="exit">
               <p style={{ fontSize: 13, color: "var(--ink-3)", marginBottom: 16, fontWeight: 600 }}>What are you coming in for?</p>
-              <motion.div variants={animate ? stagger : {}} initial="hidden" animate="visible" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 28 }}>
+              <motion.div variants={animate ? stagger : {}} initial="hidden" animate="visible" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10, marginBottom: 28 }}>
                 {services.map((service) => {
                   const sel = selectedServiceId === service.id;
                   return (
@@ -272,7 +272,7 @@ export function BarberSchedulingCard({
                     <motion.div
                       variants={animate ? slotStagger : {}}
                       initial="hidden" animate="visible"
-                      style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 7, marginBottom: 24 }}
+                      style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, marginBottom: 24 }}
                     >
                       {selectedDay.slots.map((slot) => (
                         <motion.button

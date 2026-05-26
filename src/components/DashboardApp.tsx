@@ -100,7 +100,7 @@ function StatCard({
   return (
     <div className="stat-card screen-enter">
       <div className="stat-lbl">{label}</div>
-      <div className={`stat-val${accent ? " accent" : ""}`}>{formatted}</div>
+      <div className={`stat-val${accent ? " accent" : ""}`} style={{ fontFamily: "var(--font-code)" }}>{formatted}</div>
       {trend && trendText && (
         <div className="stat-trend">
           {trend === "up"
@@ -166,6 +166,22 @@ export function DashboardApp({ view }: DashboardAppProps) {
 
         {/* ── Sidebar ── */}
         <nav className="dash-sidebar">
+          {/* Brand header */}
+          <div style={{
+            display: "flex", alignItems: "center", gap: 8,
+            padding: "16px 12px 14px",
+            borderBottom: "1px solid var(--line)", marginBottom: 6,
+            fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800,
+          }}>
+            <span className="brand-icon" style={{ width: 28, height: 28, flexShrink: 0 }}>
+              <Scissors size={13} />
+            </span>
+            <span>
+              <span style={{ color: "var(--ink-3)" }}>Icon</span>
+              <span style={{ color: "var(--ink)" }}>Book</span>
+            </span>
+          </div>
+
           <div className="sidebar-label">Navigation</div>
           {visibleNav.map(({ key, href, label, Icon }) => (
             <Link
@@ -396,7 +412,7 @@ function CalendarPanel({
     <div className="card" style={{ padding: 0, overflow: "hidden", marginBottom: 20 }}>
       {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px", borderBottom: "1px solid var(--line)" }}>
-        <h3 style={{ fontSize: 15, fontWeight: 700 }}>{compact ? "Today's book" : "Shared calendar"}</h3>
+        <h3 style={{ fontSize: 15, fontWeight: 700, fontFamily: "var(--font-heading)" }}>{compact ? "Today's book" : "Shared calendar"}</h3>
         <div className="field" style={{ margin: 0, width: "auto" }}>
           <input
             type="date"

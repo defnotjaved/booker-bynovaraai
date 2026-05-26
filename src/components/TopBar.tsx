@@ -4,14 +4,15 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, CalendarDays, LogIn, LogOut, Settings, Scissors, Clock } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 type TopBarVariant = "public" | "dashboard";
 
 const DASH_TABS = [
-  { href: "/dashboard",            label: "Today",     icon: Clock },
-  { href: "/dashboard/calendar",   label: "Calendar",  icon: CalendarDays },
-  { href: "/dashboard/analytics",  label: "Analytics", icon: BarChart3 },
-  { href: "/dashboard/settings",   label: "Settings",  icon: Settings },
+  { href: "/dashboard",           label: "Today",     icon: Clock },
+  { href: "/dashboard/calendar",  label: "Calendar",  icon: CalendarDays },
+  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/dashboard/settings",  label: "Settings",  icon: Settings },
 ];
 
 export function TopBar({
@@ -23,21 +24,30 @@ export function TopBar({
 }) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const [scrolled, setScrolled] = useState(false);
+
   const isOwner = (session?.user as { role?: string } | undefined)?.role === "owner";
   const visibleTabs = isOwner
     ? DASH_TABS
-    : DASH_TABS.filter((tab) => tab.href === "/dashboard" || tab.href === "/dashboard/calendar");
+    : DASH_TABS.filter((t) => t.href === "/dashboard" || t.href === "/dashboard/calendar");
 
   const initials = session?.user?.name
     ? session.user.name.charAt(0).toUpperCase()
     : "?";
 
+  useEffect(() => {
+    if (variant !== "public") return;
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [variant]);
+
   return (
-    <header className="topbar">
+    <header className={`topbar${scrolled ? " scrolled" : ""}`}>
       {/* Brand */}
       <Link className="brand" href="/">
         <span className="brand-icon">
-          <Scissors size={18} />
+          <Scissors size={16} />
         </span>
         <span>
           <span className="brand-dim">Icon</span>
@@ -56,9 +66,10 @@ export function TopBar({
       ) : (
         <nav className="nav-tabs" aria-label="Dashboard">
           {visibleTabs.map(({ href, label, icon: Icon }) => {
-            const active = href === "/dashboard"
-              ? pathname === "/dashboard"
-              : pathname.startsWith(href);
+            const active =
+              href === "/dashboard"
+                ? pathname === "/dashboard"
+                : pathname.startsWith(href);
             return (
               <Link
                 key={href}
@@ -74,18 +85,18 @@ export function TopBar({
       )}
 
       {/* Right side */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexShrink: 0 }}>
         {variant === "public" ? (
           <>
             <button
               onClick={onBookNow}
-              className="btn btn-primary btn-sm"
+              className="btn btn-primary btn-sm btn-glow"
             >
               Book Now
             </button>
             <Link href="/login" className="btn btn-ghost btn-sm">
-              <LogIn size={15} />
-              Staff login
+              <LogIn size={14} />
+              Admin Login
             </Link>
           </>
         ) : session?.user ? (
@@ -94,7 +105,9 @@ export function TopBar({
               <div className="user-dot">{initials}</div>
               <div className="user-meta">
                 <div className="user-name">{session.user.name}</div>
-                <div className="user-role">{(session.user as { role?: string }).role ?? "staff"}</div>
+                <div className="user-role">
+                  {(session.user as { role?: string }).role ?? "staff"}
+                </div>
               </div>
             </div>
             <button
