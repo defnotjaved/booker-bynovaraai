@@ -712,6 +712,13 @@ textarea { height: auto; min-height: 80px; padding: 12px 14px; resize: vertical;
 .wiz-body   { padding:20px 28px; }
 .wiz-footer { padding:0 28px 24px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
 .wiz-step-hint { font-size:12px; color:var(--ink-3); }
+.wiz-label { white-space: nowrap; }
+@media (max-width: 480px) {
+  .wiz-label:not(.wiz-label-active) { display: none; }
+  .wiz-header { padding: 16px 16px 0; }
+  .wiz-body   { padding: 16px 16px; }
+  .wiz-footer { padding: 0 16px 16px; }
+}
 
 /* Service selection cards */
 .svc-card {

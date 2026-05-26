@@ -145,7 +145,7 @@ export function BarberSchedulingCard({
                   <div style={{ width: 22, height: 22, borderRadius: "50%", background: isDone || isActive ? "var(--accent)" : "var(--panel-strong)", border: `2px solid ${isDone || isActive ? "var(--accent)" : "var(--line)"}`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, transition: "all 0.2s" }}>
                     {isDone ? <Check size={11} color="#fff" strokeWidth={3} /> : <span style={{ fontSize: 10, fontWeight: 800, color: isActive ? "#fff" : "var(--ink-3)", lineHeight: 1 }}>{num}</span>}
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: isActive ? 700 : 500, color: isActive ? "var(--ink)" : isDone ? "var(--accent)" : "var(--ink-3)", transition: "color 0.2s", whiteSpace: "nowrap" }}>{label}</span>
+                  <span className={isActive ? "wiz-label wiz-label-active" : "wiz-label"} style={{ fontSize: 11, fontWeight: isActive ? 700 : 500, color: isActive ? "var(--ink)" : isDone ? "var(--accent)" : "var(--ink-3)", transition: "color 0.2s", whiteSpace: "nowrap" }}>{label}</span>
                 </div>
                 {i < STEP_LABELS.length - 1 && <div style={{ flex: 1, height: 1, background: step > num ? "rgba(244,121,32,0.4)" : "var(--line)", margin: "0 6px", transition: "background 0.3s" }} />}
               </div>
@@ -162,7 +162,7 @@ export function BarberSchedulingCard({
           {step === 1 && (
             <motion.div key="step1" variants={animate ? slideIn : {}} initial="enter" animate="center" exit="exit">
               <p style={{ fontSize: 13, color: "var(--ink-3)", marginBottom: 16, fontWeight: 600 }}>What are you coming in for?</p>
-              <motion.div variants={animate ? stagger : {}} initial="hidden" animate="visible" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10, marginBottom: 28 }}>
+              <motion.div variants={animate ? stagger : {}} initial="hidden" animate="visible" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(180px, 100%), 1fr))", gap: 10, marginBottom: 28 }}>
                 {services.map((service) => {
                   const sel = selectedServiceId === service.id;
                   return (
