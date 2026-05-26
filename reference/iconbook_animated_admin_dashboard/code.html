@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IconBook Admin - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;700&amp;family=Sora:wght@700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#313030",
+                        "tertiary": "#c8c6c5",
+                        "on-secondary-fixed-variant": "#474746",
+                        "on-primary-fixed": "#321200",
+                        "surface-container": "#201f1f",
+                        "border-low-contrast": "#2B2B2B",
+                        "accent-glow": "rgba(244, 123, 32, 0.12)",
+                        "on-tertiary-fixed": "#1c1b1b",
+                        "error": "#EF4444",
+                        "on-background": "#e5e2e1",
+                        "inverse-primary": "#994700",
+                        "secondary-fixed-dim": "#c8c6c5",
+                        "accent-hover": "#D96212",
+                        "primary-fixed-dim": "#ffb68b",
+                        "success": "#22C55E",
+                        "on-secondary-fixed": "#1b1b1b",
+                        "surface-variant": "#353534",
+                        "surface-container-low": "#1c1b1b",
+                        "on-tertiary-container": "#343434",
+                        "surface": "#131313",
+                        "secondary-container": "#474746",
+                        "secondary-fixed": "#e5e2e1",
+                        "primary": "#ffb68b",
+                        "surface-container-highest": "#353534",
+                        "text-subtle": "#8E857A",
+                        "text-primary": "#F5F1EA",
+                        "primary-fixed": "#ffdbc8",
+                        "on-surface-variant": "#dec1b1",
+                        "tertiary-container": "#9e9c9c",
+                        "on-error": "#690005",
+                        "surface-dim": "#131313",
+                        "on-primary-container": "#582600",
+                        "surface-container-lowest": "#0e0e0e",
+                        "surface-tint": "#ffb68b",
+                        "inverse-on-surface": "#313030",
+                        "tertiary-fixed": "#e5e2e1",
+                        "on-primary": "#522300",
+                        "primary-container": "#f47b20",
+                        "surface-bright": "#3a3939",
+                        "inverse-surface": "#e5e2e1",
+                        "tertiary-fixed-dim": "#c8c6c5",
+                        "secondary": "#c8c6c5",
+                        "on-primary-fixed-variant": "#753400",
+                        "on-surface": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#474646",
+                        "on-secondary": "#303030",
+                        "text-secondary": "#B8AEA2",
+                        "on-secondary-container": "#b7b5b4",
+                        "info": "#3B82F6",
+                        "background": "#131313",
+                        "on-error-container": "#ffdad6",
+                        "outline-variant": "#574237",
+                        "warning": "#F59E0B",
+                        "surface-container-high": "#2a2a2a",
+                        "outline": "#a68b7d",
+                        "error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "touch-target": "44px",
+                        "container-max": "1280px",
+                        "margin-mobile": "16px",
+                        "unit": "8px",
+                        "margin-desktop": "48px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "section-h2": ["Sora"],
+                        "hero-h1-mobile": ["Sora"],
+                        "hero-h1": ["Sora"],
+                        "ui-label": ["Inter"],
+                        "data-display": ["JetBrains Mono"],
+                        "data-price": ["JetBrains Mono"],
+                        "caption": ["Inter"],
+                        "body-md": ["Inter"],
+                        "card-title": ["Sora"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "section-h2": ["44px", { "lineHeight": "120%", "fontWeight": "800" }],
+                        "hero-h1-mobile": ["48px", { "lineHeight": "110%", "fontWeight": "900" }],
+                        "hero-h1": ["84px", { "lineHeight": "110%", "letterSpacing": "-0.02em", "fontWeight": "900" }],
+                        "ui-label": ["14px", { "lineHeight": "100%", "fontWeight": "600" }],
+                        "data-display": ["16px", { "lineHeight": "140%", "fontWeight": "500" }],
+                        "data-price": ["20px", { "lineHeight": "100%", "fontWeight": "700" }],
+                        "caption": ["12px", { "lineHeight": "140%", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "150%", "fontWeight": "400" }],
+                        "card-title": ["20px", { "lineHeight": "140%", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "160%", "fontWeight": "400" }]
+                    },
+                    animation: {
+                        'pop-in': 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+                        'pulse-status': 'pulseStatus 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.9) translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' },
+                        },
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        pulseStatus: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '.5' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 0 0 rgba(244, 123, 32, 0)' },
+                            '50%': { boxShadow: '0 0 15px 5px rgba(244, 123, 32, 0.3)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #2B2B2B;
+            border-radius: 9999px;
+        }
+        .accent-glow-bg {
+            box-shadow: 0 0 50px rgba(244, 123, 32, 0.16);
+        }
+        .ambient-shadow {
+            box-shadow: 0 16px 50px rgba(0, 0, 0, 0.40);
+        }
+        
+        /* Staggered Animations */
+        .stagger-1 { animation-delay: 100ms; opacity: 0; }
+        .stagger-2 { animation-delay: 200ms; opacity: 0; }
+        .stagger-3 { animation-delay: 300ms; opacity: 0; }
+        .stagger-4 { animation-delay: 400ms; opacity: 0; }
+        .stagger-5 { animation-delay: 500ms; opacity: 0; }
+        
+        /* Sidebar Menu Animation */
+        .sidebar-item {
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .sidebar-item:hover {
+            transform: scale(1.02);
+        }
+        .sidebar-active-indicator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: #ffb68b;
+            border-radius: 0 4px 4px 0;
+            transform: scaleY(0);
+            transform-origin: center;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .sidebar-item.active .sidebar-active-indicator {
+            transform: scaleY(1);
+        }
+        
+        /* Float effect on hover */
+        .hover-float {
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+        }
+        .hover-float:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Number Rolling Animation
+            const animateValue = (obj, start, end, duration, formatStr = false) => {
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    // Easing function for smoother stop
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+                    
+                    let currentVal = Math.floor(easeProgress * (end - start) + start);
+                    
+                    if (formatStr) {
+                        obj.innerHTML = '$' + currentVal.toLocaleString();
+                    } else {
+                        obj.innerHTML = currentVal;
+                    }
+                    
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            }
+
+            const apptCount = document.getElementById('appt-count');
+            if (apptCount) animateValue(apptCount, 0, 42, 1500);
+            
+            const compCount = document.getElementById('comp-count');
+            if (compCount) animateValue(compCount, 0, 18, 1500);
+
+            const revCount = document.getElementById('rev-count');
+            if (revCount) animateValue(revCount, 0, 1240, 2000, true);
+        });
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar (Shared Component) -->
+<aside class="bg-surface-container-low dark:bg-surface-container-low border-r border-border-low-contrast docked left-0 h-full w-64 flex flex-col py-6 px-4 space-y-2 fixed z-20">
+<div class="mb-8 px-2 flex items-center space-x-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="Admin User Profile" class="w-full h-full object-cover" data-alt="A close-up portrait of a professional man in a tailored dark suit, shot in high contrast with a rim light against a dark background. The lighting emphasizes a modern, high-end masculine aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDugL9S35OItk6pYsqaiQF5mQqN8UiNLwrovCVE4y-GPExmjhoVmsNjl7evl20rpuHFB_c6oEQaPr3D2YjZxGA0KAaMT-A9b62sdTjWi6gJ0jybnS1eCUCmm-ai8GEa8rDiak7UPOd6flOUha42J1QSAYRS_-VXbKg9yRyP3R6HIv9M8bfnBluabWTQUWX6h8gr1pj013Cllr27UFb0RxVqglbKQzwCkqlHw4BKOzIQvmuDG1LKQpESMvJfehQzExhm0w9sz4F75SA"/>
+</div>
+<div>
+<h2 class="font-hero-h1 text-card-title text-primary dark:text-primary uppercase">IconBook Admin</h2>
+<p class="font-ui-label text-ui-label text-text-subtle">Management Portal</p>
+</div>
+</div>
+<nav class="flex-1 flex flex-col space-y-1">
+<a class="sidebar-item active bg-primary-container/10 text-primary rounded-lg font-bold flex items-center px-4 py-3" href="#">
+<div class="sidebar-active-indicator"></div>
+<span class="material-symbols-outlined mr-3">dashboard</span>
+<span class="font-ui-label text-ui-label">Dashboard</span>
+</a>
+<a class="sidebar-item text-text-secondary hover:text-text-primary hover:bg-surface-container-high flex items-center px-4 py-3 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">event_note</span>
+<span class="font-ui-label text-ui-label">Appointments</span>
+</a>
+<a class="sidebar-item text-text-secondary hover:text-text-primary hover:bg-surface-container-high flex items-center px-4 py-3 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">calendar_month</span>
+<span class="font-ui-label text-ui-label">Calendar</span>
+</a>
+<a class="sidebar-item text-text-secondary hover:text-text-primary hover:bg-surface-container-high flex items-center px-4 py-3 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">content_cut</span>
+<span class="font-ui-label text-ui-label">Barbers</span>
+</a>
+<a class="sidebar-item text-text-secondary hover:text-text-primary hover:bg-surface-container-high flex items-center px-4 py-3 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">list_alt</span>
+<span class="font-ui-label text-ui-label">Services</span>
+</a>
+<a class="sidebar-item text-text-secondary hover:text-text-primary hover:bg-surface-container-high flex items-center px-4 py-3 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">group</span>
+<span class="font-ui-label text-ui-label">Customers</span>
+</a>
+<a class="sidebar-item text-text-secondary hover:text-text-primary hover:bg-surface-container-high flex items-center px-4 py-3 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">assessment</span>
+<span class="font-ui-label text-ui-label">Reports</span>
+</a>
+<a class="sidebar-item text-text-secondary hover:text-text-primary hover:bg-surface-container-high flex items-center px-4 py-3 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">settings</span>
+<span class="font-ui-label text-ui-label">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-4 border-t border-border-low-contrast space-y-1">
+<a class="sidebar-item text-text-secondary hover:text-text-primary hover:bg-surface-container-high flex items-center px-4 py-3 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">help</span>
+<span class="font-ui-label text-ui-label">Support</span>
+</a>
+<a class="sidebar-item text-text-secondary hover:text-text-primary hover:bg-surface-container-high flex items-center px-4 py-3 rounded-lg" href="#">
+<span class="material-symbols-outlined mr-3">logout</span>
+<span class="font-ui-label text-ui-label">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar (Shared Component) -->
+<header class="bg-surface-container dark:bg-surface-container border-b border-border-low-contrast docked full-width top-0 sticky z-10 flex justify-between items-center w-full px-gutter h-16">
+<div class="flex items-center space-x-4">
+<h1 class="font-card-title text-card-title text-primary dark:text-primary">October 24, 2023</h1>
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-subtle text-sm">search</span>
+<input class="bg-[#141414] border border-border-low-contrast rounded-lg pl-9 pr-4 py-2 font-ui-label text-ui-label text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container focus:outline-none transition-all w-64 placeholder-[#8E857A]" placeholder="Search appointments..." type="text"/>
+</div>
+</div>
+<div class="flex items-center space-x-2">
+<button class="p-2 text-text-subtle hover:bg-surface-container-highest rounded-full transition-colors opacity-80" title="Filter">
+<span class="material-symbols-outlined">filter_list</span>
+</button>
+<button class="p-2 text-text-subtle hover:bg-surface-container-highest rounded-full transition-colors relative" title="Notifications">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-primary-container rounded-full"></span>
+</button>
+<button class="p-2 text-text-subtle hover:bg-surface-container-highest rounded-full transition-colors" title="Profile">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+<button class="ml-4 bg-primary-container text-text-primary hover:bg-accent-hover font-ui-label text-ui-label h-[44px] px-6 rounded-lg transition-colors flex items-center animate-pulse-glow">
+<span class="material-symbols-outlined mr-2 text-sm">add</span>
+                    New Booking
+                </button>
+</div>
+</header>
+<!-- Dashboard Content Canvas -->
+<div class="flex-1 p-gutter overflow-y-auto custom-scrollbar">
+<!-- Metrics Row (Bento Style) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+<div class="bg-[#1D1D1D] rounded-[18px] p-5 ambient-shadow border border-transparent hover:border-accent-glow hover-float animate-pop-in stagger-1">
+<div class="flex justify-between items-start mb-2">
+<span class="font-ui-label text-ui-label text-text-subtle uppercase">Today's Appts</span>
+<span class="material-symbols-outlined text-primary-container">event_available</span>
+</div>
+<div class="font-data-display text-[32px] font-bold text-on-surface mt-2" id="appt-count">42</div>
+<div class="font-caption text-caption text-success flex items-center mt-2">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_up</span> +5 from yesterday
+                    </div>
+</div>
+<div class="bg-[#1D1D1D] rounded-[18px] p-5 ambient-shadow border border-transparent hover:border-accent-glow hover-float animate-pop-in stagger-2">
+<div class="flex justify-between items-start mb-2">
+<span class="font-ui-label text-ui-label text-text-subtle uppercase">Completed</span>
+<span class="material-symbols-outlined text-success">check_circle</span>
+</div>
+<div class="font-data-display text-[32px] font-bold text-on-surface mt-2" id="comp-count">18</div>
+<div class="font-caption text-caption text-text-secondary mt-2">
+                        43% completion rate
+                    </div>
+</div>
+<div class="bg-[#1D1D1D] rounded-[18px] p-5 ambient-shadow accent-glow-bg border border-border-low-contrast relative overflow-hidden hover-float animate-pop-in stagger-3">
+<div class="absolute inset-0 bg-gradient-to-br from-[rgba(244,123,32,0.1)] to-transparent pointer-events-none"></div>
+<div class="relative z-10">
+<div class="flex justify-between items-start mb-2">
+<span class="font-ui-label text-ui-label text-primary uppercase">Revenue Today</span>
+<span class="material-symbols-outlined text-primary">payments</span>
+</div>
+<div class="font-data-price text-[32px] text-on-surface mt-2" id="rev-count">$1,240</div>
+<div class="font-caption text-caption text-primary flex items-center mt-2">
+                            Tracking ahead of goal
+                        </div>
+</div>
+</div>
+<div class="bg-[#1D1D1D] rounded-[18px] p-5 ambient-shadow border border-transparent hover:border-accent-glow hover-float animate-pop-in stagger-4">
+<div class="flex justify-between items-start mb-2">
+<span class="font-ui-label text-ui-label text-text-subtle uppercase">Cancellations</span>
+<span class="material-symbols-outlined text-error">cancel</span>
+</div>
+<div class="font-data-display text-[32px] font-bold text-on-surface mt-2">3</div>
+<div class="font-caption text-caption text-error flex items-center mt-2">
+<span class="material-symbols-outlined text-[14px] mr-1">trending_down</span> Action needed
+                    </div>
+</div>
+<div class="bg-[#1D1D1D] rounded-[18px] p-5 ambient-shadow border border-transparent hover:border-accent-glow hover-float animate-pop-in stagger-5">
+<div class="flex justify-between items-start mb-2">
+<span class="font-ui-label text-ui-label text-text-subtle uppercase">Next Available</span>
+<span class="material-symbols-outlined text-info">schedule</span>
+</div>
+<div class="font-data-display text-[24px] font-bold text-on-surface mt-2">2:30 PM</div>
+<div class="font-caption text-caption text-text-secondary mt-2">
+                        with Marcus T.
+                    </div>
+</div>
+</section>
+<!-- Split View Area -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-280px)] min-h-[600px]">
+<!-- Left: Appointment Timeline (Glassmorphism inspired card) -->
+<section class="lg:col-span-5 bg-[#1A1A1A]/80 backdrop-blur-md rounded-[18px] border border-border-low-contrast ambient-shadow flex flex-col overflow-hidden animate-fade-in-up stagger-2">
+<div class="p-5 border-b border-border-low-contrast flex justify-between items-center bg-[#141414]">
+<h3 class="font-card-title text-card-title text-on-surface">Timeline</h3>
+<div class="flex space-x-2">
+<span class="w-3 h-3 rounded-full bg-success"></span>
+<span class="w-3 h-3 rounded-full bg-warning"></span>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto custom-scrollbar p-5 space-y-6 relative">
+<!-- Timeline Line -->
+<div class="absolute left-[39px] top-5 bottom-5 w-px bg-border-low-contrast"></div>
+<!-- Hour Block: 10:00 AM -->
+<div class="relative flex animate-fade-in-up stagger-3">
+<div class="w-20 font-data-display text-text-subtle pt-3">10:00</div>
+<div class="flex-1 pl-6 space-y-3">
+<!-- Appointment Card -->
+<div class="bg-[#1D1D1D] rounded-xl p-4 border border-border-low-contrast hover:border-[rgba(244,123,32,0.32)] transition-all ambient-shadow group">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="font-ui-label text-ui-label text-on-surface">James Wilson</div>
+<div class="font-caption text-caption text-text-subtle">Signature Fade</div>
+</div>
+<span class="px-2 py-1 rounded-full bg-success/20 text-success font-caption text-caption flex items-center">
+                                            CONFIRMED
+                                        </span>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex items-center space-x-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-xs">M</div>
+<span class="font-caption text-caption text-text-secondary">Marcus</span>
+</div>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
+<button class="text-text-subtle hover:text-success"><span class="material-symbols-outlined text-sm">check</span></button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Hour Block: 11:00 AM -->
+<div class="relative flex animate-fade-in-up stagger-4">
+<div class="w-20 font-data-display text-text-subtle pt-3">11:00</div>
+<div class="flex-1 pl-6 space-y-3">
+<div class="bg-[#1D1D1D] rounded-xl p-4 border border-[rgba(244,123,32,0.32)] ambient-shadow group relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-warning"></div>
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="font-ui-label text-ui-label text-on-surface">David Chen</div>
+<div class="font-caption text-caption text-text-subtle">Classic Cut &amp; Beard</div>
+</div>
+<span class="px-2 py-1 rounded-full bg-warning/20 text-warning font-caption text-caption flex items-center animate-pulse-status">
+                                            PENDING
+                                        </span>
+</div>
+<div class="flex justify-between items-end mt-4">
+<div class="flex items-center space-x-2">
+<div class="w-6 h-6 rounded-full bg-surface-variant flex items-center justify-center text-xs">A</div>
+<span class="font-caption text-caption text-text-secondary">Alex</span>
+</div>
+<div class="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-2">
+<button class="text-text-subtle hover:text-success" title="Confirm"><span class="material-symbols-outlined text-sm">check</span></button>
+<button class="text-text-subtle hover:text-error" title="Cancel"><span class="material-symbols-outlined text-sm">close</span></button>
+</div>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-xl p-3 border border-dashed border-border-low-contrast flex items-center justify-center text-text-subtle hover:text-primary hover:border-primary transition-colors cursor-pointer h-16">
+<span class="material-symbols-outlined mr-2">add</span>
+<span class="font-caption text-caption">Available Slot</span>
+</div>
+</div>
+</div>
+<!-- Hour Block: 12:00 PM -->
+<div class="relative flex animate-fade-in-up stagger-5">
+<div class="w-20 font-data-display text-text-subtle pt-3">12:00</div>
+<div class="flex-1 pl-6 space-y-3">
+<div class="bg-[#1D1D1D] rounded-xl p-4 border border-border-low-contrast ambient-shadow opacity-60">
+<div class="flex justify-between items-start mb-2">
+<div>
+<div class="font-ui-label text-ui-label text-on-surface line-through">Michael Ross</div>
+<div class="font-caption text-caption text-text-subtle">Buzz Cut</div>
+</div>
+<span class="px-2 py-1 rounded-full bg-surface-variant text-text-subtle font-caption text-caption flex items-center">
+                                            COMPLETED
+                                        </span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Right: Recent Appointments Table (Clean Tabular Data) -->
+<section class="lg:col-span-7 bg-[#1D1D1D] rounded-[18px] border border-border-low-contrast ambient-shadow flex flex-col overflow-hidden animate-fade-in-up stagger-3">
+<div class="p-5 border-b border-border-low-contrast flex justify-between items-center bg-[#141414]">
+<h3 class="font-card-title text-card-title text-on-surface">Today's Schedule</h3>
+<button class="text-text-subtle hover:text-primary font-ui-label text-ui-label flex items-center transition-colors">
+                            View All <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span>
+</button>
+</div>
+<div class="flex-1 overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-border-low-contrast font-ui-label text-ui-label text-text-subtle">
+<th class="py-4 px-5 font-normal">Time</th>
+<th class="py-4 px-5 font-normal">Customer</th>
+<th class="py-4 px-5 font-normal">Service</th>
+<th class="py-4 px-5 font-normal">Barber</th>
+<th class="py-4 px-5 font-normal">Status</th>
+<th class="py-4 px-5 font-normal text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-on-surface divide-y divide-border-low-contrast">
+<tr class="hover:bg-surface-container-low transition-colors group animate-fade-in-up stagger-3">
+<td class="py-4 px-5 font-data-display text-text-secondary">09:00</td>
+<td class="py-4 px-5 font-medium">Robert Fox</td>
+<td class="py-4 px-5 text-text-secondary">Hot Towel Shave</td>
+<td class="py-4 px-5">Marcus</td>
+<td class="py-4 px-5">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-surface-variant text-text-subtle font-caption text-caption">COMPLETED</span>
+</td>
+<td class="py-4 px-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-text-subtle hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group animate-fade-in-up stagger-4">
+<td class="py-4 px-5 font-data-display text-text-secondary">10:00</td>
+<td class="py-4 px-5 font-medium">James Wilson</td>
+<td class="py-4 px-5 text-text-secondary">Signature Fade</td>
+<td class="py-4 px-5">Marcus</td>
+<td class="py-4 px-5">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-success/20 text-success font-caption text-caption">CONFIRMED</span>
+</td>
+<td class="py-4 px-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-text-subtle hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group bg-[rgba(244,123,32,0.05)] border-l-2 border-l-warning animate-fade-in-up stagger-5">
+<td class="py-4 px-5 font-data-display text-primary">11:00</td>
+<td class="py-4 px-5 font-medium">David Chen</td>
+<td class="py-4 px-5 text-text-secondary">Classic Cut &amp; Beard</td>
+<td class="py-4 px-5">Alex</td>
+<td class="py-4 px-5">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-warning/20 text-warning font-caption text-caption animate-pulse-status">PENDING</span>
+</td>
+<td class="py-4 px-5 text-right">
+<div class="flex justify-end space-x-2">
+<button class="bg-[#1D1D1D] border border-border-low-contrast hover:border-success text-success p-1 rounded transition-colors" title="Confirm">
+<span class="material-symbols-outlined text-sm">check</span>
+</button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group animate-fade-in-up stagger-5" style="animation-delay: 600ms;">
+<td class="py-4 px-5 font-data-display text-text-secondary">13:30</td>
+<td class="py-4 px-5 font-medium">Wade Warren</td>
+<td class="py-4 px-5 text-text-secondary">Kid's Cut</td>
+<td class="py-4 px-5">Alex</td>
+<td class="py-4 px-5">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-success/20 text-success font-caption text-caption">CONFIRMED</span>
+</td>
+<td class="py-4 px-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-text-subtle hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group animate-fade-in-up stagger-5" style="animation-delay: 700ms;">
+<td class="py-4 px-5 font-data-display text-text-secondary">14:00</td>
+<td class="py-4 px-5 font-medium">Brooklyn Simmons</td>
+<td class="py-4 px-5 text-text-secondary">Hair Color</td>
+<td class="py-4 px-5">Marcus</td>
+<td class="py-4 px-5">
+<span class="inline-flex items-center px-2 py-1 rounded-full bg-success/20 text-success font-caption text-caption">CONFIRMED</span>
+</td>
+<td class="py-4 px-5 text-right opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="text-text-subtle hover:text-primary"><span class="material-symbols-outlined text-[20px]">more_vert</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+</div>
+</main>
+</body></html>

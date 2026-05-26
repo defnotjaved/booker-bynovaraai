@@ -5,6 +5,7 @@ dist
 .env
 .env.local
 .env.*.local
+.env.render
 .vercel
 .playwright-mcp
 *.tsbuildinfo

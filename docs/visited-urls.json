@@ -1,0 +1,10 @@
+[
+  "http://localhost:3003/",
+  "http://localhost:3003/book",
+  "http://localhost:3003/book/anil",
+  "http://localhost:3003/dashboard",
+  "http://localhost:3003/dashboard/analytics",
+  "http://localhost:3003/dashboard/calendar",
+  "http://localhost:3003/dashboard/settings",
+  "http://localhost:3003/login"
+]

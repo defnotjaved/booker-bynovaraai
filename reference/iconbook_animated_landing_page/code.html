@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>IconBook Barbershop</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800;900&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#313030",
+                      "tertiary": "#c8c6c5",
+                      "on-secondary-fixed-variant": "#474746",
+                      "on-primary-fixed": "#321200",
+                      "surface-container": "#201f1f",
+                      "border-low-contrast": "#2B2B2B",
+                      "accent-glow": "rgba(244, 123, 32, 0.12)",
+                      "on-tertiary-fixed": "#1c1b1b",
+                      "error": "#EF4444",
+                      "on-background": "#e5e2e1",
+                      "inverse-primary": "#994700",
+                      "secondary-fixed-dim": "#c8c6c5",
+                      "accent-hover": "#D96212",
+                      "primary-fixed-dim": "#ffb68b",
+                      "success": "#22C55E",
+                      "on-secondary-fixed": "#1b1b1b",
+                      "surface-variant": "#353534",
+                      "surface-container-low": "#1c1b1b",
+                      "on-tertiary-container": "#343434",
+                      "surface": "#131313",
+                      "secondary-container": "#474746",
+                      "secondary-fixed": "#e5e2e1",
+                      "primary": "#ffb68b",
+                      "surface-container-highest": "#353534",
+                      "text-subtle": "#8E857A",
+                      "text-primary": "#F5F1EA",
+                      "primary-fixed": "#ffdbc8",
+                      "on-surface-variant": "#dec1b1",
+                      "tertiary-container": "#9e9c9c",
+                      "on-error": "#690005",
+                      "surface-dim": "#131313",
+                      "on-primary-container": "#582600",
+                      "surface-container-lowest": "#0e0e0e",
+                      "surface-tint": "#ffb68b",
+                      "inverse-on-surface": "#313030",
+                      "tertiary-fixed": "#e5e2e1",
+                      "on-primary": "#522300",
+                      "primary-container": "#f47b20",
+                      "surface-bright": "#3a3939",
+                      "inverse-surface": "#e5e2e1",
+                      "tertiary-fixed-dim": "#c8c6c5",
+                      "secondary": "#c8c6c5",
+                      "on-primary-fixed-variant": "#753400",
+                      "on-surface": "#e5e2e1",
+                      "on-tertiary-fixed-variant": "#474646",
+                      "on-secondary": "#303030",
+                      "text-secondary": "#B8AEA2",
+                      "on-secondary-container": "#b7b5b4",
+                      "info": "#3B82F6",
+                      "background": "#131313",
+                      "on-error-container": "#ffdad6",
+                      "outline-variant": "#574237",
+                      "warning": "#F59E0B",
+                      "surface-container-high": "#2a2a2a",
+                      "outline": "#a68b7d",
+                      "error-container": "#93000a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px",
+                      "2xl": "1.125rem",
+                      "3xl": "1.5rem"
+              },
+              "spacing": {
+                      "touch-target": "44px",
+                      "container-max": "1280px",
+                      "margin-mobile": "16px",
+                      "unit": "8px",
+                      "margin-desktop": "48px",
+                      "gutter": "24px",
+                      "section-y": "120px"
+              },
+              "fontFamily": {
+                      "section-h2": ["Sora"],
+                      "hero-h1-mobile": ["Sora"],
+                      "hero-h1": ["Sora"],
+                      "ui-label": ["Inter"],
+                      "data-display": ["JetBrains Mono"],
+                      "data-price": ["JetBrains Mono"],
+                      "caption": ["Inter"],
+                      "body-md": ["Inter"],
+                      "card-title": ["Sora"],
+                      "body-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "section-h2": ["44px", {"lineHeight": "120%", "fontWeight": "800"}],
+                      "hero-h1-mobile": ["48px", {"lineHeight": "110%", "fontWeight": "900"}],
+                      "hero-h1": ["84px", {"lineHeight": "110%", "letterSpacing": "-0.02em", "fontWeight": "900"}],
+                      "ui-label": ["14px", {"lineHeight": "100%", "fontWeight": "600"}],
+                      "data-display": ["16px", {"lineHeight": "140%", "fontWeight": "500"}],
+                      "data-price": ["20px", {"lineHeight": "100%", "fontWeight": "700"}],
+                      "caption": ["12px", {"lineHeight": "140%", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "150%", "fontWeight": "400"}],
+                      "card-title": ["20px", {"lineHeight": "140%", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "160%", "fontWeight": "400"}]
+              },
+              "boxShadow": {
+                  "ambient": "0 16px 50px rgba(0, 0, 0, 0.40)",
+                  "glow": "0 0 50px rgba(244, 123, 32, 0.16)",
+                  "glow-strong": "0 0 80px rgba(244, 123, 32, 0.4)"
+              },
+              "animation": {
+                "fade-in-up": "fadeInUp 0.8s ease-out forwards",
+                "pulse-glow": "pulseGlow 2s infinite",
+              },
+              "keyframes": {
+                fadeInUp: {
+                  "0%": { opacity: "0", transform: "translateY(20px)" },
+                  "100%": { opacity: "1", transform: "translateY(0)" }
+                },
+                pulseGlow: {
+                  "0%, 100%": { boxShadow: "0 0 15px rgba(244, 123, 32, 0.4)" },
+                  "50%": { boxShadow: "0 0 30px rgba(244, 123, 32, 0.8)" }
+                }
+              }
+            },
+          },
+        }
+      </script>
+<style>
+          body {
+              background-color: #090909;
+              color: #F5F1EA;
+              scroll-behavior: smooth;
+          }
+          .glass-panel {
+              background: rgba(29, 29, 29, 0.6);
+              backdrop-filter: blur(16px);
+              -webkit-backdrop-filter: blur(16px);
+              border: 1px solid rgba(255, 255, 255, 0.05);
+          }
+          .orange-gradient-text {
+              background: linear-gradient(to right, #F5F1EA, #F47B20);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+          }
+          
+          /* Custom Scrollbar for inner components */
+          .custom-scrollbar::-webkit-scrollbar {
+              width: 4px;
+              height: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+              background: transparent;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: #2B2B2B;
+              border-radius: 4px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: #474746;
+          }
+
+          /* Animations */
+          .stagger-1 { animation-delay: 0.1s; opacity: 0; }
+          .stagger-2 { animation-delay: 0.3s; opacity: 0; }
+          .stagger-3 { animation-delay: 0.5s; opacity: 0; }
+          .stagger-4 { animation-delay: 0.7s; opacity: 0; }
+
+          .nav-link {
+              position: relative;
+          }
+          .nav-link::after {
+              content: '';
+              position: absolute;
+              width: 0;
+              height: 2px;
+              bottom: -4px;
+              left: 0;
+              background-color: #f47b20;
+              transition: width 0.3s ease;
+          }
+          .nav-link:hover::after {
+              width: 100%;
+          }
+
+          .parallax-image {
+              transition: transform 0.5s ease-out;
+          }
+          .parallax-container:hover .parallax-image {
+              transform: scale(1.05);
+          }
+      </style>
+</head>
+<body class="antialiased selection:bg-primary-container selection:text-text-primary">
+<!-- TopNavBar -->
+<nav class="bg-surface/90 backdrop-blur-md dark:bg-surface/90 shadow-md dark:shadow-none docked full-width top-0 sticky z-50">
+<div class="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto bg-surface-container-low dark:bg-surface-container-low">
+<a class="font-hero-h1 text-hero-h1-mobile tracking-tighter text-primary dark:text-primary transition-transform hover:scale-105 duration-300" href="#">IconBook</a>
+<div class="hidden md:flex items-center space-x-8">
+<a class="nav-link font-ui-label text-ui-label text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#services">Services</a>
+<a class="nav-link font-ui-label text-ui-label text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#about">About</a>
+<a class="nav-link font-ui-label text-ui-label text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#reviews">Reviews</a>
+<a class="nav-link font-ui-label text-ui-label text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#contact">Contact</a>
+</div>
+<div class="flex items-center space-x-4">
+<a class="hidden lg:block font-ui-label text-ui-label text-on-surface-variant font-medium hover:text-primary transition-colors duration-200" href="#login">Staff Login</a>
+<button class="bg-primary-container text-text-primary hover:bg-[#ffb68b] hover:text-[#321200] font-ui-label text-ui-label px-6 h-touch-target rounded-xl transition-all duration-300 shadow-glow hover:shadow-glow-strong hover:-translate-y-[2px] animate-pulse-glow">Book Now</button>
+</div>
+</div>
+</nav>
+<!-- Hero Section -->
+<main class="relative min-h-[90vh] flex items-center overflow-hidden">
+<!-- Background Ambient Glow -->
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-container rounded-full mix-blend-screen filter blur-[150px] opacity-20"></div>
+<div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-primary-container rounded-full mix-blend-screen filter blur-[200px] opacity-10"></div>
+<!-- Grid pattern overlay -->
+<div class="absolute inset-0" style="background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px); background-size: 32px 32px;"></div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-desktop w-full z-10 grid grid-cols-1 lg:grid-cols-12 gap-gutter py-20">
+<!-- Hero Content (Left) -->
+<div class="col-span-1 lg:col-span-6 flex flex-col justify-center items-start space-y-8">
+<div class="animate-fade-in-up stagger-1 inline-flex items-center space-x-2 bg-surface-container-high border border-border-low-contrast rounded-full px-4 py-2">
+<span class="material-symbols-outlined text-primary text-[16px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-ui-label text-ui-label text-text-primary uppercase tracking-wide">Serving Trinidad Since 2001</span>
+</div>
+<h1 class="animate-fade-in-up stagger-2 font-hero-h1 text-hero-h1 text-text-primary">
+                    Icon <br/><span class="orange-gradient-text">Barbers</span>
+</h1>
+<p class="animate-fade-in-up stagger-3 font-body-lg text-body-lg text-text-secondary max-w-lg">
+                    Precision Cuts. Personal Service. Experience the pinnacle of men's grooming in a modern, luxury environment designed for the discerning gentleman.
+                </p>
+<div class="animate-fade-in-up stagger-4 flex flex-col sm:flex-row items-center gap-4 pt-4">
+<button class="w-full sm:w-auto bg-primary-container text-text-primary hover:bg-[#ffb68b] hover:text-[#321200] font-ui-label text-ui-label px-8 h-[52px] rounded-xl transition-all duration-300 shadow-glow hover:shadow-glow-strong hover:-translate-y-[2px] flex items-center justify-center space-x-2 animate-pulse-glow">
+<span>Book Appointment</span>
+<span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+</button>
+<button class="w-full sm:w-auto bg-surface border border-border-low-contrast text-text-primary hover:bg-surface-container-high font-ui-label text-ui-label px-8 h-[52px] rounded-xl transition-all duration-300 flex items-center justify-center hover:-translate-y-[2px]">
+                        Learn More
+                    </button>
+</div>
+<!-- Trust Stats -->
+<div class="animate-fade-in-up stagger-4 flex items-center space-x-8 pt-8 border-t border-border-low-contrast w-full max-w-md">
+<div>
+<div class="font-data-price text-data-price text-text-primary">23+</div>
+<div class="font-caption text-caption text-text-subtle uppercase tracking-wider mt-1">Years</div>
+</div>
+<div class="w-px h-8 bg-border-low-contrast"></div>
+<div>
+<div class="font-data-price text-data-price text-text-primary flex items-center">
+                            5.0 <span class="material-symbols-outlined text-warning text-[18px] ml-1" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div class="font-caption text-caption text-text-subtle uppercase tracking-wider mt-1">Rating</div>
+</div>
+<div class="w-px h-8 bg-border-low-contrast"></div>
+<div>
+<div class="font-data-price text-data-price text-text-primary">174+</div>
+<div class="font-caption text-caption text-text-subtle uppercase tracking-wider mt-1">Reviews</div>
+</div>
+</div>
+</div>
+<!-- Booking Wizard (Right) -->
+<div class="col-span-1 lg:col-span-6 flex justify-center lg:justify-end items-center mt-12 lg:mt-0 relative animate-fade-in-up stagger-3">
+<!-- Decorative element -->
+<div class="absolute -right-4 top-1/2 -translate-y-1/2 w-32 h-64 border border-border-low-contrast rounded-3xl -z-10 bg-[linear-gradient(to_bottom,transparent,rgba(255,255,255,0.02))]"></div>
+<div class="glass-panel p-8 rounded-3xl w-full max-w-md shadow-ambient relative overflow-hidden">
+<!-- Progress Bar -->
+<div class="flex justify-between items-center mb-8 relative">
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-border-low-contrast -z-10 -translate-y-1/2"></div>
+<div class="absolute top-1/2 left-0 w-[25%] h-[2px] bg-primary-container -z-10 -translate-y-1/2 shadow-[0_0_10px_rgba(244,123,32,0.5)] transition-all duration-500 ease-in-out"></div>
+<div class="w-8 h-8 rounded-full bg-primary-container text-text-primary flex items-center justify-center font-ui-label text-[12px] shadow-[0_0_15px_rgba(244,123,32,0.6)] transition-all duration-300">1</div>
+<div class="w-8 h-8 rounded-full bg-[#141414] border border-border-low-contrast text-text-subtle flex items-center justify-center font-ui-label text-[12px] transition-all duration-300">2</div>
+<div class="w-8 h-8 rounded-full bg-[#141414] border border-border-low-contrast text-text-subtle flex items-center justify-center font-ui-label text-[12px] transition-all duration-300">3</div>
+<div class="w-8 h-8 rounded-full bg-[#141414] border border-border-low-contrast text-text-subtle flex items-center justify-center font-ui-label text-[12px] transition-all duration-300">4</div>
+</div>
+<h3 class="font-card-title text-card-title text-text-primary mb-6 transition-transform duration-300">Select Service</h3>
+<!-- Service Options List -->
+<div class="space-y-3 mb-8 max-h-[300px] overflow-y-auto custom-scrollbar pr-2 transition-transform duration-500 ease-in-out translate-x-0">
+<!-- Selected State -->
+<div class="bg-[#1D1D1D] border border-[rgba(244,123,32,0.5)] rounded-2xl p-4 cursor-pointer relative overflow-hidden shadow-[inset_0_0_20px_rgba(244,123,32,0.1)] transition-all duration-300 transform scale-[1.02]">
+<div class="absolute top-0 right-0 w-1 h-full bg-primary-container"></div>
+<div class="flex justify-between items-center">
+<div>
+<div class="font-ui-label text-ui-label text-text-primary mb-1">Haircut</div>
+<div class="font-caption text-caption text-text-subtle flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1">schedule</span> 45 Min
+                                    </div>
+</div>
+<div class="font-data-price text-data-price text-text-primary">TT$120</div>
+</div>
+</div>
+<!-- Unselected States -->
+<div class="bg-[#141414] border border-border-low-contrast rounded-2xl p-4 cursor-pointer hover:bg-[#1D1D1D] hover:border-[#474746] transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+<div class="flex justify-between items-center">
+<div>
+<div class="font-ui-label text-ui-label text-text-primary mb-1">Haircut + Beard</div>
+<div class="font-caption text-caption text-text-subtle flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1">schedule</span> 60 Min
+                                    </div>
+</div>
+<div class="font-data-price text-data-price text-text-primary">TT$160</div>
+</div>
+</div>
+<div class="bg-[#141414] border border-border-low-contrast rounded-2xl p-4 cursor-pointer hover:bg-[#1D1D1D] hover:border-[#474746] transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+<div class="flex justify-between items-center">
+<div>
+<div class="font-ui-label text-ui-label text-text-primary mb-1">Line Up</div>
+<div class="font-caption text-caption text-text-subtle flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1">schedule</span> 15 Min
+                                    </div>
+</div>
+<div class="font-data-price text-data-price text-text-primary">TT$50</div>
+</div>
+</div>
+<div class="bg-[#141414] border border-border-low-contrast rounded-2xl p-4 cursor-pointer hover:bg-[#1D1D1D] hover:border-[#474746] transition-all duration-300 hover:shadow-md hover:-translate-y-1">
+<div class="flex justify-between items-center">
+<div>
+<div class="font-ui-label text-ui-label text-text-primary mb-1">Kids Cut (Under 12)</div>
+<div class="font-caption text-caption text-text-subtle flex items-center">
+<span class="material-symbols-outlined text-[14px] mr-1">schedule</span> 30 Min
+                                    </div>
+</div>
+<div class="font-data-price text-data-price text-text-primary">TT$80</div>
+</div>
+</div>
+</div>
+<button class="w-full bg-primary-container text-text-primary hover:bg-[#ffb68b] hover:text-[#321200] font-ui-label text-ui-label h-[52px] rounded-xl transition-all duration-300 shadow-glow hover:shadow-glow-strong flex justify-center items-center space-x-2 group">
+<span>Continue</span>
+<span class="material-symbols-outlined transition-transform duration-300 group-hover:translate-x-1">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- History / About Section -->
+<section class="py-section-y relative bg-[#090909]" id="about">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+<!-- Left Content -->
+<div class="order-2 lg:order-1 space-y-8">
+<div>
+<h2 class="font-section-h2 text-section-h2 text-text-primary mb-4">23 Years of <span class="orange-gradient-text">Grooming Excellence</span></h2>
+<p class="font-body-md text-body-md text-text-secondary leading-relaxed">
+                            Since 2001, IconBook has been the cornerstone of classic masculine styling in Trinidad. We blend traditional techniques with modern trends, ensuring every client leaves feeling sharp, confident, and ready for whatever's next.
+                        </p>
+</div>
+<ul class="space-y-6">
+<li class="flex items-start space-x-4 group cursor-pointer">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#1D1D1D] border border-border-low-contrast flex items-center justify-center mt-1 transition-colors duration-300 group-hover:border-primary group-hover:bg-primary/10">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">content_cut</span>
+</div>
+<div>
+<h4 class="font-card-title text-card-title text-text-primary mb-1 transition-colors duration-300 group-hover:text-primary">Master Barbers</h4>
+<p class="font-body-md text-body-md text-text-secondary">Our team undergoes rigorous continuous training to master both classic fades and contemporary styles.</p>
+</div>
+</li>
+<li class="flex items-start space-x-4 group cursor-pointer">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#1D1D1D] border border-border-low-contrast flex items-center justify-center mt-1 transition-colors duration-300 group-hover:border-primary group-hover:bg-primary/10">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">spa</span>
+</div>
+<div>
+<h4 class="font-card-title text-card-title text-text-primary mb-1 transition-colors duration-300 group-hover:text-primary">Premium Products</h4>
+<p class="font-body-md text-body-md text-text-secondary">We use only top-tier, professional-grade grooming products tailored for specific hair and skin types.</p>
+</div>
+</li>
+<li class="flex items-start space-x-4 group cursor-pointer">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#1D1D1D] border border-border-low-contrast flex items-center justify-center mt-1 transition-colors duration-300 group-hover:border-primary group-hover:bg-primary/10">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">chair_alt</span>
+</div>
+<div>
+<h4 class="font-card-title text-card-title text-text-primary mb-1 transition-colors duration-300 group-hover:text-primary">Luxury Atmosphere</h4>
+<p class="font-body-md text-body-md text-text-secondary">Relax in our vintage leather chairs with a complimentary beverage while we take care of the details.</p>
+</div>
+</li>
+</ul>
+</div>
+<!-- Right Image -->
+<div class="order-1 lg:order-2 relative group parallax-container">
+<!-- Accent frame -->
+<div class="absolute -inset-4 border border-border-low-contrast rounded-3xl -z-10 translate-x-4 translate-y-4 bg-[#141414] transition-all duration-500 group-hover:border-[rgba(244,123,32,0.3)] group-hover:shadow-[0_0_30px_rgba(244,123,32,0.1)]"></div>
+<div class="relative rounded-2xl overflow-hidden shadow-ambient h-[600px]">
+<img alt="A high-end, modern barbershop interior featuring dark wood paneling, black leather vintage barber chairs, and dramatic warm lighting. The aesthetic is masculine and premium." class="parallax-image w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5NIb7Qy6_7nibeAuVmiJMcgFAhFBCL2XnbvhQsi2f7HMOTVd6V03-K0oknpJtoQJif1qQJxVHewR-fmIyZ6ZZDoT2Np7GvGI9Q1OLp_2D08QhJSRXjNYRM7PulNMM6JYWD44J0zbanlsE5jA85MbQQJ85JaB6Kdg7DbFO3RZdvQCpeUqr1u5h16LaAUHAsGVESegEecMckYYvnpsXYJNWXQM5Xfl1OwqyhxDp7Dd-dMM0DK0q713ef5MABsn5C908QSBknJYECjc"/>
+<div class="absolute inset-0 bg-gradient-to-t from-[#090909] via-transparent to-transparent opacity-80"></div>
+<!-- Floating badge -->
+<div class="absolute bottom-8 left-8 glass-panel px-6 py-4 rounded-2xl inline-flex flex-col items-center transform transition-transform duration-500 group-hover:-translate-y-2">
+<span class="font-data-price text-data-price text-text-primary">Est. 2001</span>
+<span class="font-caption text-caption text-primary uppercase tracking-widest mt-1">Trinidad</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Services & Pricing Section -->
+<section class="py-section-y bg-[#141414] relative border-y border-border-low-contrast" id="services">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="text-center max-w-2xl mx-auto mb-16">
+<span class="font-ui-label text-ui-label text-primary uppercase tracking-widest block mb-4">Our Menu</span>
+<h2 class="font-section-h2 text-section-h2 text-text-primary mb-6">Signature Services</h2>
+<p class="font-body-md text-body-md text-text-secondary">Transparent pricing, exceptional results. All services include a consultation, hot towel finish, and styling.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+<!-- Service Card 1 -->
+<div class="bg-[#1D1D1D] rounded-[18px] p-8 shadow-ambient border border-transparent hover:border-[rgba(244,123,32,0.4)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.6)] group relative overflow-hidden">
+<!-- Hover Glow -->
+<div class="absolute -bottom-20 -right-20 w-40 h-40 bg-primary-container rounded-full mix-blend-screen filter blur-[80px] opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
+<div class="flex justify-between items-start mb-6 border-b border-border-low-contrast pb-6 transition-colors duration-300 group-hover:border-primary/30">
+<div>
+<h3 class="font-card-title text-card-title text-text-primary mb-2 transition-colors duration-300 group-hover:text-primary-fixed">Haircut</h3>
+<p class="font-body-md text-body-md text-text-secondary max-w-xs">Precision fade, taper, or classic scissor cut tailored to your head shape.</p>
+</div>
+<div class="font-data-price text-[28px] leading-none text-primary font-bold">TT$120</div>
+</div>
+<ul class="space-y-3 mb-8 font-body-md text-body-md text-text-secondary">
+<li class="flex items-center space-x-3"><span class="material-symbols-outlined text-primary text-[18px]">check</span><span>Consultation</span></li>
+<li class="flex items-center space-x-3"><span class="material-symbols-outlined text-primary text-[18px]">check</span><span>Precision Cut</span></li>
+<li class="flex items-center space-x-3"><span class="material-symbols-outlined text-primary text-[18px]">check</span><span>Neck Shave</span></li>
+<li class="flex items-center space-x-3"><span class="material-symbols-outlined text-primary text-[18px]">check</span><span>Styling</span></li>
+</ul>
+<div class="flex items-center justify-between text-text-subtle font-caption text-caption mt-auto">
+<span class="flex items-center"><span class="material-symbols-outlined text-[16px] mr-1">schedule</span> 45 Min</span>
+<button class="text-primary hover:text-text-primary font-ui-label text-ui-label transition-colors uppercase tracking-wide group-hover:translate-x-1 duration-300">Book Now</button>
+</div>
+</div>
+<!-- Service Card 2 -->
+<div class="bg-[#1D1D1D] rounded-[18px] p-8 shadow-ambient border border-primary/20 relative overflow-hidden hover:border-[rgba(244,123,32,0.6)] transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(244,123,32,0.15)] group">
+<!-- Active Indicator -->
+<div class="absolute top-0 left-0 w-full h-1 bg-primary-container"></div>
+<!-- Hover Glow -->
+<div class="absolute -bottom-20 -right-20 w-40 h-40 bg-primary-container rounded-full mix-blend-screen filter blur-[80px] opacity-10 group-hover:opacity-50 transition-opacity duration-500"></div>
+<div class="absolute top-6 right-8 bg-[#321200] text-primary-container px-3 py-1 rounded-full font-caption text-[10px] uppercase tracking-widest border border-primary/20 shadow-glow">Most Popular</div>
+<div class="flex justify-between items-start mb-6 border-b border-border-low-contrast pb-6 mt-4 transition-colors duration-300 group-hover:border-primary/40">
+<div>
+<h3 class="font-card-title text-card-title text-text-primary mb-2 transition-colors duration-300 group-hover:text-primary-fixed">Haircut + Beard</h3>
+<p class="font-body-md text-body-md text-text-secondary max-w-xs">The full works. Precision haircut combined with meticulous beard sculpting.</p>
+</div>
+<div class="font-data-price text-[28px] leading-none text-primary font-bold">TT$160</div>
+</div>
+<ul class="space-y-3 mb-8 font-body-md text-body-md text-text-secondary">
+<li class="flex items-center space-x-3"><span class="material-symbols-outlined text-primary text-[18px]">check</span><span>Everything in Haircut</span></li>
+<li class="flex items-center space-x-3"><span class="material-symbols-outlined text-primary text-[18px]">check</span><span>Beard Shaping</span></li>
+<li class="flex items-center space-x-3"><span class="material-symbols-outlined text-primary text-[18px]">check</span><span>Hot Towel Treatment</span></li>
+<li class="flex items-center space-x-3"><span class="material-symbols-outlined text-primary text-[18px]">check</span><span>Beard Oil Finish</span></li>
+</ul>
+<div class="flex items-center justify-between text-text-subtle font-caption text-caption mt-auto">
+<span class="flex items-center"><span class="material-symbols-outlined text-[16px] mr-1">schedule</span> 60 Min</span>
+<button class="bg-primary-container text-text-primary px-6 py-2 rounded-lg font-ui-label text-ui-label transition-all duration-300 hover:bg-[#ffb68b] hover:text-[#321200] uppercase tracking-wide shadow-glow hover:shadow-glow-strong">Book Now</button>
+</div>
+</div>
+</div>
+<div class="text-center mt-12">
+<button class="text-text-primary hover:text-primary font-ui-label text-ui-label transition-colors flex items-center justify-center mx-auto space-x-2 group">
+<span>View Full Menu &amp; Pricing</span>
+<span class="material-symbols-outlined text-[18px] transition-transform duration-300 group-hover:translate-y-1">arrow_downward</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="bg-surface-container-lowest dark:bg-surface-container-lowest border-t border-border-low-contrast full-width flat no shadows">
+<div class="flex flex-col md:flex-row justify-between items-center w-full px-margin-desktop py-12 max-w-container-max mx-auto space-y-6 md:space-y-0">
+<div class="font-hero-h1 text-card-title text-primary text-center md:text-left transition-transform hover:scale-105 duration-300 cursor-pointer">
+                IconBook Barbershop
+            </div>
+<div class="flex flex-wrap justify-center gap-6 md:gap-8">
+<a class="nav-link font-ui-label text-ui-label text-text-subtle hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="nav-link font-ui-label text-ui-label text-text-subtle hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="nav-link font-ui-label text-ui-label text-text-subtle hover:text-primary transition-colors" href="#">Careers</a>
+<a class="nav-link font-ui-label text-ui-label text-text-subtle hover:text-primary transition-colors" href="#">Shop Info</a>
+</div>
+<div class="font-body-md text-body-md text-text-subtle text-center md:text-right">
+                © 2023 IconBook Barbershop. All rights reserved.
+            </div>
+</div>
+</footer>
+</body></html>
