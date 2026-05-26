@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
   if (phone.replace(/\D/g, "").length < 7) {
     return NextResponse.json(null);
   }
-  const customer = findCustomerByPhone(phone);
+  const customer = await findCustomerByPhone(phone);
   if (!customer) return NextResponse.json(null);
   return NextResponse.json({
     name: customer.name,

@@ -9,7 +9,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = await request.json();
-  const settings = updateSettings(body);
+  const settings = await updateSettings(body);
 
   return NextResponse.json({ settings });
 }

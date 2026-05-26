@@ -1,0 +1,104 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String  @id @default(cuid())
+  name         String
+  email        String  @unique
+  role         String
+  passwordHash String
+  barberId     String?
+}
+
+model BarberProfile {
+  id      String  @id @default(cuid())
+  slug    String  @unique
+  name    String
+  email   String  @unique
+  active  Boolean @default(true)
+  chair   Int     @default(1)
+  isOwner Boolean @default(false)
+}
+
+model Service {
+  id              String  @id @default(cuid())
+  name            String
+  price           Float
+  durationMinutes Int
+  active          Boolean @default(true)
+}
+
+model Customer {
+  id                String  @id @default(cuid())
+  name              String
+  phone             String  @unique
+  email             String
+  preferredBarberId String?
+  visitCount        Int     @default(0)
+  lastVisit         String?
+  createdAt         String
+}
+
+model Appointment {
+  id                 String  @id @default(cuid())
+  customerId         String?
+  customerName       String
+  customerPhone      String
+  customerEmail      String
+  barberId           String
+  serviceId          String
+  date               String
+  startTime          String
+  endTime            String
+  status             String  @default("booked")
+  source             String  @default("online")
+  finalServiceAmount Float?
+  productAmount      Float?
+  notes              String?
+  createdAt          String
+}
+
+model ScheduleRule {
+  id        String  @id @default(cuid())
+  barberId  String
+  dayOfWeek Int
+  startTime String
+  endTime   String
+  isWorking Boolean @default(true)
+
+  @@unique([barberId, dayOfWeek])
+}
+
+model ScheduleException {
+  id            String  @id @default(cuid())
+  barberId      String
+  date          String
+  startTime     String?
+  endTime       String?
+  isUnavailable Boolean @default(true)
+  reason        String  @default("")
+}
+
+model NotificationLog {
+  id             String @id @default(cuid())
+  appointmentId  String
+  type           String
+  recipientEmail String
+  subject        String
+  status         String
+  createdAt      String
+}
+
+model Settings {
+  id                          String  @id @default("shop")
+  performanceVisibleToBarbers Boolean @default(false)
+  shopStartTime               String  @default("09:00")
+  shopEndTime                 String  @default("19:00")
+  overflowEndTime             String  @default("20:30")
+}

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BarberSchedulingCard } from "./barber-scheduling-card";
+import { supabase } from "@/lib/supabase-client";
 import type { Service } from "@/lib/types";
 
 interface Barber {
@@ -119,6 +120,20 @@ export function BookingModal({
       loadWeekSlots(selectedBarberId, weekOffset);
     }
   }, [isOpen, variant, selectedBarberId, weekOffset, loadWeekSlots]);
+
+  // Re-fetch slots live whenever any appointment is created or updated
+  useEffect(() => {
+    const channel = supabase
+      .channel("appointments-changes")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "appointments" },
+        () => { loadWeekSlots(selectedBarberId, weekOffset); }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [selectedBarberId, weekOffset, loadWeekSlots]);
 
   function handleBarberChange(barberId: string) {
     setSelectedBarberId(barberId);

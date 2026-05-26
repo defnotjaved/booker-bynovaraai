@@ -4,7 +4,7 @@ import { createService, getSnapshot } from "@/lib/store";
 
 // Public GET — returns only active services for the landing page and booking modal.
 export async function GET() {
-  const { services } = getSnapshot();
+  const { services } = await getSnapshot();
   return NextResponse.json({ services: services.filter((s) => s.active) });
 }
 
@@ -19,6 +19,6 @@ export async function POST(request: NextRequest) {
   if (!name || typeof price !== "number" || typeof durationMinutes !== "number") {
     return NextResponse.json({ error: "name, price, and durationMinutes are required." }, { status: 400 });
   }
-  const service = createService({ name, price, durationMinutes });
+  const service = await createService({ name, price, durationMinutes });
   return NextResponse.json({ service }, { status: 201 });
 }

@@ -96,23 +96,27 @@ export function BookingExperience({ barberSlug }: BookingExperienceProps) {
   return (
     <div className="booking-panel">
       {confirmation ? (
-        <div className="form-grid">
-          <span className="eyebrow">Booking confirmed</span>
-          <h2>{confirmation.customerName}, you are set.</h2>
+        <div className="form-stack" style={{ textAlign: "center", padding: "8px 0" }}>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <div className="success-icon" style={{ width: 64, height: 64, borderRadius: "50%", background: "var(--accent-glow)", border: "2px solid rgba(244,121,32,0.3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Scissors size={26} color="var(--accent)" />
+            </div>
+          </div>
+          <div>
+            <span className="eyebrow">Booking confirmed</span>
+            <h2 style={{ marginTop: 8 }}>{confirmation.customerName}, you&apos;re set.</h2>
+          </div>
           <p className="lead">
             {confirmedService?.name} with {confirmedBarber?.name} on{" "}
             {confirmation.date} at {formatTime(confirmation.startTime)}.
           </p>
-          <div className="tag-row">
-            <span className="tag">
-              <Check size={14} /> Customer email sent
-            </span>
-            <span className="tag">
-              <Mail size={14} /> Barber notified
-            </span>
+          <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+            <span className="chip chip-completed"><Check size={12} /> Email sent</span>
+            <span className="chip chip-arrived"><Mail size={12} /> Barber notified</span>
           </div>
           <button
-            className="btn"
+            className="btn btn-secondary"
+            style={{ alignSelf: "center" }}
             onClick={() => {
               setConfirmation(null);
               setForm((current) => ({ ...current, startTime: "" }));
@@ -199,7 +203,7 @@ export function BookingExperience({ barberSlug }: BookingExperienceProps) {
               {uniqueTimes.length ? (
                 uniqueTimes.map((time) => (
                   <button
-                    className={`slot ${form.startTime === time ? "active" : ""}`}
+                    className={`time-slot${form.startTime === time ? " sel" : ""}`}
                     key={time}
                     type="button"
                     onClick={() => setForm((current) => ({ ...current, startTime: time }))}

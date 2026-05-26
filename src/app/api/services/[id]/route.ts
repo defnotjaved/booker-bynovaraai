@@ -15,7 +15,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const { id } = await params;
   const body = await request.json();
   try {
-    const service = updateService(id, body);
+    const service = await updateService(id, body);
     return NextResponse.json({ service });
   } catch {
     return NextResponse.json({ error: "Service not found." }, { status: 404 });
@@ -29,7 +29,7 @@ export async function DELETE(_request: NextRequest, { params }: { params: Promis
   }
   const { id } = await params;
   try {
-    const service = updateService(id, { active: false });
+    const service = await updateService(id, { active: false });
     return NextResponse.json({ service });
   } catch {
     return NextResponse.json({ error: "Service not found." }, { status: 404 });

@@ -8,6 +8,6 @@ export async function GET(request: NextRequest) {
   const barberId = search.get("barberId") ?? undefined;
 
   return NextResponse.json({
-    slots: getAvailableSlots(date, barberId)
+    slots: await getAvailableSlots(date, barberId)
   });
 }

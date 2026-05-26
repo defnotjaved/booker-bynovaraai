@@ -1,7 +1,6 @@
-import {
+import type {
   AnalyticsSummary,
   Appointment,
-  AppointmentStatus,
   BarberProfile,
   Customer,
   NotificationLog,
@@ -9,8 +8,7 @@ import {
   ScheduleRule,
   Service,
   Settings,
-  Slot,
-  User
+  Slot
 } from "./types";
 import {
   addDays,
@@ -21,9 +19,10 @@ import {
   timeToMinutes,
   todayString
 } from "./time";
+import { prisma } from "./db";
+import { sendBarberNotification, sendBookingConfirmation } from "./email";
 
-type StoreState = {
-  users: User[];
+export type StoreSnapshot = {
   barbers: BarberProfile[];
   services: Service[];
   customers: Customer[];
@@ -34,260 +33,101 @@ type StoreState = {
   settings: Settings;
 };
 
-const ownerId = "barber-anil";
-
-const services: Service[] = [
-  {
-    id: "service-haircut",
-    name: "Haircut",
-    price: 120,
-    durationMinutes: 30,
-    active: true
-  },
-  {
-    id: "service-haircut-beard",
-    name: "Haircut + Beard/Touch-up",
-    price: 150,
-    durationMinutes: 30,
-    active: true
-  }
-];
-
-const barbers: BarberProfile[] = [
-  {
-    id: ownerId,
-    slug: "anil",
-    name: "Anil",
-    email: "anil@iconbook.local",
-    active: true,
-    chair: 1,
-    isOwner: true
-  },
-  {
-    id: "barber-shivam",
-    slug: "shivam",
-    name: "Shivam",
-    email: "shivam@iconbook.local",
-    active: true,
-    chair: 2,
-    isOwner: false
-  },
-  {
-    id: "barber-shastri",
-    slug: "shastri",
-    name: "Shastri",
-    email: "shastri@iconbook.local",
-    active: true,
-    chair: 3,
-    isOwner: false
-  },
-  {
-    id: "barber-open-chair",
-    slug: "open-chair",
-    name: "Open Chair",
-    email: "unused@iconbook.local",
-    active: false,
-    chair: 4,
-    isOwner: false
-  }
-];
-
-function makeWeeklySchedule() {
-  const offDays: Record<string, number> = {
-    "barber-anil": 1,
-    "barber-shivam": 2,
-    "barber-shastri": 3
-  };
-
-  return barbers
-    .filter((barber) => barber.active)
-    .flatMap((barber) =>
-      [0, 1, 2, 3, 4, 5, 6].map((day) => ({
-        id: `schedule-${barber.id}-${day}`,
-        barberId: barber.id,
-        dayOfWeek: day,
-        startTime: "09:00",
-        endTime: "19:00",
-        isWorking: offDays[barber.id] !== day
-      }))
-    );
-}
-
-function seedAppointments(): Appointment[] {
-  const today = todayString();
-  const yesterday = addDays(today, -1);
-  const tomorrow = addDays(today, 1);
-  const base = new Date().toISOString();
-
-  return [
-    makeAppointment("seed-1", "Darren", "868-555-1010", "darren@example.com", ownerId, "service-haircut", today, "09:30", "completed", "online", 120, 0, base),
-    makeAppointment("seed-2", "Marcus", "868-555-2020", "marcus@example.com", "barber-shivam", "service-haircut-beard", today, "10:30", "arrived", "online", undefined, undefined, base),
-    makeAppointment("seed-3", "Kevin", "868-555-3030", "kevin@example.com", "barber-shastri", "service-haircut", today, "12:00", "booked", "walk_in", undefined, undefined, base),
-    makeAppointment("seed-4", "Jamal", "868-555-4040", "jamal@example.com", "barber-shivam", "service-haircut", yesterday, "11:00", "completed", "online", 120, 30, base),
-    makeAppointment("seed-5", "Andre", "868-555-5050", "andre@example.com", "barber-shastri", "service-haircut-beard", yesterday, "13:30", "completed", "online", 150, 0, base),
-    makeAppointment("seed-6", "Nicholas", "868-555-6060", "nicholas@example.com", ownerId, "service-haircut-beard", yesterday, "15:00", "no_show", "online", undefined, undefined, base),
-    makeAppointment("seed-7", "Ravi", "868-555-7070", "ravi@example.com", ownerId, "service-haircut", tomorrow, "10:00", "booked", "online", undefined, undefined, base)
-  ];
-}
-
-function makeAppointment(
-  id: string,
-  customerName: string,
-  customerPhone: string,
-  customerEmail: string,
-  barberId: string,
-  serviceId: string,
-  date: string,
-  startTime: string,
-  status: AppointmentStatus,
-  source: "online" | "walk_in",
-  finalServiceAmount: number | undefined,
-  productAmount: number | undefined,
-  createdAt: string
-): Appointment {
-  const service = services.find((item) => item.id === serviceId) ?? services[0];
-  return {
-    id,
-    customerName,
-    customerPhone,
-    customerEmail,
-    barberId,
-    serviceId,
-    date,
-    startTime,
-    endTime: addMinutes(startTime, service.durationMinutes),
-    status,
-    source,
-    finalServiceAmount,
-    productAmount,
-    createdAt
-  };
-}
-
-function createInitialState(): StoreState {
-  return {
-    users: [
-      {
-        id: "user-anil",
-        name: "Anil",
-        role: "owner",
-        barberId: ownerId,
-        email: "anil@iconbook.local"
-      },
-      {
-        id: "user-shivam",
-        name: "Shivam",
-        role: "barber",
-        barberId: "barber-shivam",
-        email: "shivam@iconbook.local"
-      },
-      {
-        id: "user-shastri",
-        name: "Shastri",
-        role: "barber",
-        barberId: "barber-shastri",
-        email: "shastri@iconbook.local"
-      }
-    ],
+export async function getSnapshot(): Promise<StoreSnapshot> {
+  const [
     barbers,
     services,
-    customers: [],
-    appointments: seedAppointments(),
-    scheduleRules: makeWeeklySchedule(),
-    scheduleExceptions: [
-      {
-        id: "exception-anil-demo",
-        barberId: ownerId,
-        date: addDays(todayString(), 2),
-        isUnavailable: true,
-        reason: "Owner day off"
-      }
-    ],
-    notifications: [],
-    settings: {
-      performanceVisibleToBarbers: false,
-      shopStartTime: "09:00",
-      shopEndTime: "19:00",
-      overflowEndTime: "20:30"
-    }
+    customers,
+    appointments,
+    scheduleRules,
+    scheduleExceptions,
+    notifications,
+    settingsRow
+  ] = await Promise.all([
+    prisma.barberProfile.findMany(),
+    prisma.service.findMany(),
+    prisma.customer.findMany(),
+    prisma.appointment.findMany({ orderBy: { date: "desc" } }),
+    prisma.scheduleRule.findMany(),
+    prisma.scheduleException.findMany(),
+    prisma.notificationLog.findMany({ orderBy: { createdAt: "desc" }, take: 50 }),
+    prisma.settings.findUnique({ where: { id: "shop" } })
+  ]);
+
+  const settings: Settings = settingsRow ?? {
+    performanceVisibleToBarbers: false,
+    shopStartTime: "09:00",
+    shopEndTime: "19:00",
+    overflowEndTime: "20:30"
+  };
+
+  return {
+    barbers: barbers as BarberProfile[],
+    services: services as Service[],
+    customers: customers as Customer[],
+    appointments: appointments as unknown as Appointment[],
+    scheduleRules: scheduleRules as ScheduleRule[],
+    scheduleExceptions: scheduleExceptions as ScheduleException[],
+    notifications: notifications as NotificationLog[],
+    settings
   };
 }
 
-const globalStore = globalThis as typeof globalThis & {
-  __iconBookStore?: StoreState;
-};
-
-function state() {
-  if (!globalStore.__iconBookStore) {
-    globalStore.__iconBookStore = createInitialState();
-  }
-  return globalStore.__iconBookStore;
+export async function getBarberBySlug(slug: string): Promise<BarberProfile | null> {
+  return prisma.barberProfile.findUnique({ where: { slug } }) as Promise<BarberProfile | null>;
 }
 
-export function getSnapshot() {
-  return structuredClone(state());
-}
-
-export function getBarberBySlug(slug: string) {
-  return state().barbers.find((barber) => barber.slug === slug);
-}
-
-export function getAvailableSlots(date: string, barberId?: string): Slot[] {
-  const data = state();
-  const activeBarbers = data.barbers.filter((barber) => barber.active);
-  const targetBarbers = barberId
-    ? activeBarbers.filter((barber) => barber.id === barberId)
-    : activeBarbers;
+export async function getAvailableSlots(date: string, barberId?: string): Promise<Slot[]> {
   const dow = dayOfWeek(date);
 
-  return targetBarbers.flatMap((barber) => {
-    const exception = data.scheduleExceptions.find(
-      (item) => item.barberId === barber.id && item.date === date
-    );
-    const rule = data.scheduleRules.find(
-      (item) => item.barberId === barber.id && item.dayOfWeek === dow
-    );
+  const [barbers, scheduleRules, scheduleExceptions, appointments] = await Promise.all([
+    prisma.barberProfile.findMany({
+      where: barberId ? { id: barberId, active: true } : { active: true }
+    }),
+    prisma.scheduleRule.findMany({ where: { dayOfWeek: dow } }),
+    prisma.scheduleException.findMany({ where: { date } }),
+    prisma.appointment.findMany({
+      where: { date, status: { notIn: ["cancelled", "no_show"] } }
+    })
+  ]);
 
-    if (exception?.isUnavailable || !rule?.isWorking) {
-      return [];
-    }
+  return barbers.flatMap((barber) => {
+    const exception = scheduleExceptions.find((e) => e.barberId === barber.id);
+    const rule = scheduleRules.find((r) => r.barberId === barber.id);
+
+    if (exception?.isUnavailable || !rule?.isWorking) return [];
 
     const start = exception?.startTime ?? rule.startTime;
     const end = exception?.endTime ?? rule.endTime;
+
     return generateTimes(start, end).map((time) => ({
       barberId: barber.id,
       time,
-      available: !isSlotTaken(date, barber.id, time)
+      available: !isSlotTaken(appointments as unknown as Appointment[], barber.id, time)
     }));
   });
 }
 
-export function getAnyAvailableSlot(date: string, time: string, preferredBarberId?: string) {
-  const slots = getAvailableSlots(date, preferredBarberId).filter(
-    (slot) => slot.time === time && slot.available
-  );
-  if (slots[0]) {
-    return slots[0];
-  }
+export async function getAnyAvailableSlot(
+  date: string,
+  time: string,
+  preferredBarberId?: string
+): Promise<Slot | undefined> {
+  const preferred = await getAvailableSlots(date, preferredBarberId);
+  const found = preferred.find((s) => s.time === time && s.available);
+  if (found) return found;
 
-  return getAvailableSlots(date).find((slot) => slot.time === time && slot.available);
+  const all = await getAvailableSlots(date);
+  return all.find((s) => s.time === time && s.available);
 }
 
-function isSlotTaken(date: string, barberId: string, time: string) {
+function isSlotTaken(appointments: Appointment[], barberId: string, time: string): boolean {
   const start = timeToMinutes(time);
-  return state().appointments.some((appointment) => {
-    if (
-      appointment.date !== date ||
-      appointment.barberId !== barberId ||
-      appointment.status === "cancelled" ||
-      appointment.status === "no_show"
-    ) {
-      return false;
-    }
-
-    const appointmentStart = timeToMinutes(appointment.startTime);
-    const appointmentEnd = timeToMinutes(appointment.endTime);
-    return start >= appointmentStart && start < appointmentEnd;
+  return appointments.some((appt) => {
+    if (appt.barberId !== barberId) return false;
+    const s = timeToMinutes(appt.startTime);
+    const e = timeToMinutes(appt.endTime);
+    return start >= s && start < e;
   });
 }
 
@@ -295,83 +135,37 @@ function normalizePhone(phone: string): string {
   return phone.replace(/\D/g, "");
 }
 
-function upsertCustomer(input: {
-  name: string;
-  phone: string;
-  email: string;
-  barberId: string;
-  date: string;
-}): Customer {
-  const data = state();
-  const normalized = normalizePhone(input.phone);
-  const existing = data.customers.find((c) => normalizePhone(c.phone) === normalized);
-
-  if (existing) {
-    existing.name = input.name;
-    existing.email = input.email;
-    existing.visitCount += 1;
-    existing.lastVisit = input.date;
-    if (!existing.preferredBarberId) existing.preferredBarberId = input.barberId;
-    return existing;
-  }
-
-  const customer: Customer = {
-    id: `cust-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    name: input.name,
-    phone: input.phone,
-    email: input.email,
-    preferredBarberId: input.barberId,
-    visitCount: 1,
-    lastVisit: input.date,
-    createdAt: new Date().toISOString(),
-  };
-  data.customers.push(customer);
-  return customer;
-}
-
-export function findCustomerByPhone(phone: string): Customer | undefined {
+export async function findCustomerByPhone(phone: string): Promise<Customer | null> {
   const normalized = normalizePhone(phone);
-  return structuredClone(
-    state().customers.find((c) => normalizePhone(c.phone) === normalized)
-  );
+  return prisma.customer.findFirst({
+    where: { phone: { contains: normalized } }
+  }) as Promise<Customer | null>;
 }
 
-export function getCustomerAppointments(customerId: string): Appointment[] {
-  return structuredClone(
-    state()
-      .appointments.filter((a) => a.customerId === customerId)
-      .sort((a, b) => b.date.localeCompare(a.date))
-  );
+export async function getCustomerAppointments(customerId: string): Promise<Appointment[]> {
+  const rows = await prisma.appointment.findMany({
+    where: { customerId },
+    orderBy: { date: "desc" }
+  });
+  return rows as unknown as Appointment[];
 }
 
-export function createService(input: {
+export async function createService(input: {
   name: string;
   price: number;
   durationMinutes: number;
-}): Service {
-  const service: Service = {
-    id: `service-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-    name: input.name,
-    price: input.price,
-    durationMinutes: input.durationMinutes,
-    active: true,
-  };
-  state().services.push(service);
-  return structuredClone(service);
+}): Promise<Service> {
+  return prisma.service.create({ data: input }) as Promise<Service>;
 }
 
-export function updateService(
+export async function updateService(
   id: string,
   input: Partial<Pick<Service, "name" | "price" | "durationMinutes" | "active">>
-): Service {
-  const data = state();
-  const service = data.services.find((s) => s.id === id);
-  if (!service) throw new Error("Service not found.");
-  Object.assign(service, input);
-  return structuredClone(service);
+): Promise<Service> {
+  return prisma.service.update({ where: { id }, data: input }) as Promise<Service>;
 }
 
-export function createBooking(input: {
+export async function createBooking(input: {
   customerName: string;
   customerPhone: string;
   customerEmail: string;
@@ -381,54 +175,62 @@ export function createBooking(input: {
   barberId?: string;
   source?: "online" | "walk_in";
   notes?: string;
-}) {
-  const data = state();
-  const service = data.services.find((item) => item.id === input.serviceId);
-  if (!service) {
-    throw new Error("Service was not found.");
-  }
+}): Promise<Appointment> {
+  const service = await prisma.service.findUnique({ where: { id: input.serviceId } });
+  if (!service) throw new Error("Service was not found.");
 
-  const slot = getAnyAvailableSlot(input.date, input.startTime, input.barberId);
-  if (!slot) {
-    throw new Error("That time is no longer available.");
-  }
+  const slot = await getAnyAvailableSlot(input.date, input.startTime, input.barberId);
+  if (!slot) throw new Error("That time is no longer available.");
 
-  const customer = upsertCustomer({
-    name: input.customerName,
-    phone: input.customerPhone,
-    email: input.customerEmail,
-    barberId: slot.barberId,
-    date: input.date,
+  const normalized = normalizePhone(input.customerPhone);
+  const customer = await prisma.customer.upsert({
+    where: { phone: normalized },
+    update: {
+      name: input.customerName,
+      email: input.customerEmail,
+      visitCount: { increment: 1 },
+      lastVisit: input.date
+    },
+    create: {
+      name: input.customerName,
+      phone: normalized,
+      email: input.customerEmail,
+      preferredBarberId: slot.barberId,
+      visitCount: 1,
+      lastVisit: input.date,
+      createdAt: new Date().toISOString()
+    }
   });
 
-  const appointment: Appointment = {
-    id: `appt-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    customerId: customer.id,
-    customerName: input.customerName,
-    customerPhone: input.customerPhone,
-    customerEmail: input.customerEmail,
-    barberId: slot.barberId,
-    serviceId: service.id,
-    date: input.date,
-    startTime: input.startTime,
-    endTime: addMinutes(input.startTime, service.durationMinutes),
-    status: input.source === "walk_in" ? "arrived" : "booked",
-    source: input.source ?? "online",
-    notes: input.notes,
-    createdAt: new Date().toISOString()
-  };
+  const appointment = await prisma.appointment.create({
+    data: {
+      customerId: customer.id,
+      customerName: input.customerName,
+      customerPhone: input.customerPhone,
+      customerEmail: input.customerEmail,
+      barberId: slot.barberId,
+      serviceId: service.id,
+      date: input.date,
+      startTime: input.startTime,
+      endTime: addMinutes(input.startTime, service.durationMinutes),
+      status: input.source === "walk_in" ? "arrived" : "booked",
+      source: input.source ?? "online",
+      notes: input.notes,
+      createdAt: new Date().toISOString()
+    }
+  }) as unknown as Appointment;
 
-  data.appointments.push(appointment);
-  logEmail(appointment.id, "booking", appointment.customerEmail, "Your IconBook appointment is confirmed");
-  const barber = data.barbers.find((item) => item.id === appointment.barberId);
-  if (barber) {
-    logEmail(appointment.id, "booking", barber.email, `New IconBook booking for ${formatTime(appointment.startTime)}`);
-  }
+  const barber = await prisma.barberProfile.findUnique({ where: { id: slot.barberId } });
+
+  await Promise.allSettled([
+    sendBookingConfirmation(appointment, service as Service, barber as BarberProfile),
+    sendBarberNotification(appointment, service as Service, barber as BarberProfile)
+  ]);
 
   return appointment;
 }
 
-export function updateAppointment(
+export async function updateAppointment(
   id: string,
   input: Partial<
     Pick<
@@ -443,144 +245,164 @@ export function updateAppointment(
       | "notes"
     >
   >
-) {
-  const data = state();
-  const appointment = data.appointments.find((item) => item.id === id);
-  if (!appointment) {
-    throw new Error("Appointment was not found.");
-  }
+): Promise<Appointment> {
+  const existing = await prisma.appointment.findUnique({ where: { id } });
+  if (!existing) throw new Error("Appointment was not found.");
 
-  const service = input.serviceId
-    ? data.services.find((item) => item.id === input.serviceId)
-    : data.services.find((item) => item.id === appointment.serviceId);
+  const serviceId = input.serviceId ?? existing.serviceId;
+  const service = await prisma.service.findUnique({ where: { id: serviceId } });
 
-  const nextDate = input.date ?? appointment.date;
-  const nextTime = input.startTime ?? appointment.startTime;
-  const nextBarberId = input.barberId ?? appointment.barberId;
+  const nextDate = input.date ?? existing.date;
+  const nextTime = input.startTime ?? existing.startTime;
+  const nextBarberId = input.barberId ?? existing.barberId;
 
   const moved =
-    nextDate !== appointment.date ||
-    nextTime !== appointment.startTime ||
-    nextBarberId !== appointment.barberId;
+    nextDate !== existing.date ||
+    nextTime !== existing.startTime ||
+    nextBarberId !== existing.barberId;
 
   if (moved) {
-    const originalStatus = appointment.status;
-    appointment.status = "cancelled";
-    const slots = getAvailableSlots(nextDate, nextBarberId).filter(
-      (slot) => slot.time === nextTime && slot.available
-    );
-    appointment.status = originalStatus;
-    if (!slots[0]) {
-      throw new Error("The rescheduled time is not available.");
-    }
+    const slots = await getAvailableSlots(nextDate, nextBarberId);
+    const available = slots.filter((s) => s.time === nextTime && s.available);
+    if (!available.length) throw new Error("The rescheduled time is not available.");
   }
 
-  Object.assign(appointment, input);
-  appointment.endTime = addMinutes(nextTime, service?.durationMinutes ?? 30);
+  const updated = await prisma.appointment.update({
+    where: { id },
+    data: {
+      ...input,
+      endTime: addMinutes(nextTime, service?.durationMinutes ?? 30)
+    }
+  }) as unknown as Appointment;
 
   if (moved) {
-    logEmail(appointment.id, "reschedule", appointment.customerEmail, "Your IconBook appointment was rescheduled");
+    await prisma.notificationLog.create({
+      data: {
+        appointmentId: id,
+        type: "reschedule",
+        recipientEmail: existing.customerEmail,
+        subject: "Your IconBook appointment was rescheduled",
+        status: "sent",
+        createdAt: new Date().toISOString()
+      }
+    });
   }
 
   if (input.status === "cancelled") {
-    logEmail(appointment.id, "cancellation", appointment.customerEmail, "Your IconBook appointment was cancelled");
+    await prisma.notificationLog.create({
+      data: {
+        appointmentId: id,
+        type: "cancellation",
+        recipientEmail: existing.customerEmail,
+        subject: "Your IconBook appointment was cancelled",
+        status: "sent",
+        createdAt: new Date().toISOString()
+      }
+    });
   }
 
-  return appointment;
+  return updated;
 }
 
-export function updateSettings(input: Partial<Settings>) {
-  const data = state();
-  data.settings = {
-    ...data.settings,
-    ...input
-  };
-  return data.settings;
+export async function updateSettings(input: Partial<Settings>): Promise<Settings> {
+  return prisma.settings.upsert({
+    where: { id: "shop" },
+    update: input,
+    create: {
+      id: "shop",
+      performanceVisibleToBarbers: false,
+      shopStartTime: "09:00",
+      shopEndTime: "19:00",
+      overflowEndTime: "20:30",
+      ...input
+    }
+  }) as Promise<Settings>;
 }
 
-export function updateSchedule(input: {
+export async function updateSchedule(input: {
+  id: string;
   barberId: string;
   dayOfWeek: number;
   isWorking: boolean;
   startTime: string;
   endTime: string;
-}) {
-  const data = state();
-  const rule = data.scheduleRules.find(
-    (item) => item.barberId === input.barberId && item.dayOfWeek === input.dayOfWeek
-  );
-  if (!rule) {
-    throw new Error("Schedule rule was not found.");
-  }
-
-  Object.assign(rule, input);
-  return rule;
+}): Promise<ScheduleRule> {
+  return prisma.scheduleRule.upsert({
+    where: { barberId_dayOfWeek: { barberId: input.barberId, dayOfWeek: input.dayOfWeek } },
+    update: { isWorking: input.isWorking, startTime: input.startTime, endTime: input.endTime },
+    create: {
+      barberId: input.barberId,
+      dayOfWeek: input.dayOfWeek,
+      isWorking: input.isWorking,
+      startTime: input.startTime,
+      endTime: input.endTime
+    }
+  }) as Promise<ScheduleRule>;
 }
 
-function logEmail(
-  appointmentId: string,
-  type: NotificationLog["type"],
-  recipientEmail: string,
-  subject: string
-) {
-  state().notifications.unshift({
-    id: `note-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-    appointmentId,
-    type,
-    recipientEmail,
-    subject,
-    status: "sent",
-    createdAt: new Date().toISOString()
-  });
-}
-
-export function getAnalytics(date = todayString()): AnalyticsSummary {
-  const data = state();
+export async function getAnalytics(
+  date = todayString(),
+  options?: { barberId?: string }
+): Promise<AnalyticsSummary> {
   const yesterday = addDays(date, -1);
   const weekStart = addDays(date, -6);
+  const barberWhere = options?.barberId ? { barberId: options.barberId } : {};
 
-  const completed = data.appointments.filter((item) => item.status === "completed");
-  const revenueForDate = (targetDate: string) =>
-    completed
-      .filter((item) => item.date === targetDate)
-      .reduce((sum, item) => sum + serviceAmount(item), 0);
-  const cutsForDate = (targetDate: string) =>
-    completed.filter((item) => item.date === targetDate).length;
+  const [completed, allAppointments, todayAppointments, barbers, services] = await Promise.all([
+    prisma.appointment.findMany({ where: { status: "completed", ...barberWhere } }),
+    prisma.appointment.findMany({
+      where: { status: { in: ["completed", "no_show", "cancelled"] }, ...barberWhere }
+    }),
+    prisma.appointment.findMany({ where: { date, ...barberWhere } }),
+    prisma.barberProfile.findMany({
+      where: options?.barberId ? { active: true, id: options.barberId } : { active: true }
+    }),
+    prisma.service.findMany()
+  ]);
+
+  function serviceAmount(appt: typeof completed[0]) {
+    if (typeof appt.finalServiceAmount === "number") return appt.finalServiceAmount;
+    return services.find((s) => s.id === appt.serviceId)?.price ?? 0;
+  }
+
+  const revenueForDate = (d: string) =>
+    completed.filter((a) => a.date === d).reduce((sum, a) => sum + serviceAmount(a), 0);
+
+  const cutsForDate = (d: string) => completed.filter((a) => a.date === d).length;
 
   const todayRevenue = revenueForDate(date);
   const yesterdayRevenue = revenueForDate(yesterday);
   const weekRevenue = completed
-    .filter((item) => item.date >= weekStart && item.date <= date)
-    .reduce((sum, item) => sum + serviceAmount(item), 0);
+    .filter((a) => a.date >= weekStart && a.date <= date)
+    .reduce((sum, a) => sum + serviceAmount(a), 0);
+
   const todayCuts = cutsForDate(date);
   const yesterdayCuts = cutsForDate(yesterday);
-  const eligibleAttendance = data.appointments.filter((item) =>
-    ["completed", "no_show", "cancelled"].includes(item.status)
-  );
-  const attendanceRate = eligibleAttendance.length
+
+  const attendanceRate = allAppointments.length
     ? Math.round(
-        (eligibleAttendance.filter((item) => item.status === "completed").length /
-          eligibleAttendance.length) *
-          100
+        (completed.length / allAppointments.length) * 100
       )
     : 100;
-  const productRevenue = completed.reduce((sum, item) => sum + (item.productAmount ?? 0), 0);
-  const barberPerformance = data.barbers
-    .filter((barber) => barber.active)
-    .map((barber) => {
-      const barberAppointments = completed.filter((item) => item.barberId === barber.id);
-      const serviceRevenue = barberAppointments.reduce((sum, item) => sum + serviceAmount(item), 0);
-      const barberProducts = barberAppointments.reduce((sum, item) => sum + (item.productAmount ?? 0), 0);
-      const ownerShare = barber.isOwner ? serviceRevenue : serviceRevenue * 0.4;
-      return {
-        barberId: barber.id,
-        cuts: barberAppointments.length,
-        serviceRevenue,
-        productRevenue: barberProducts,
-        ownerShare,
-        barberShare: barber.isOwner ? serviceRevenue : serviceRevenue * 0.6
-      };
-    });
+  const walkInCount = todayAppointments.filter((a) => a.source === "walk_in").length;
+  const onlineBookingCount = todayAppointments.filter((a) => a.source === "online").length;
+
+  const productRevenue = completed.reduce((sum, a) => sum + (a.productAmount ?? 0), 0);
+
+  const barberPerformance = barbers.map((barber) => {
+    const barberAppts = completed.filter((a) => a.barberId === barber.id);
+    const serviceRevenue = barberAppts.reduce((sum, a) => sum + serviceAmount(a), 0);
+    const barberProducts = barberAppts.reduce((sum, a) => sum + (a.productAmount ?? 0), 0);
+    const ownerShare = barber.isOwner ? serviceRevenue : serviceRevenue * 0.4;
+    return {
+      barberId: barber.id,
+      cuts: barberAppts.length,
+      serviceRevenue,
+      productRevenue: barberProducts,
+      ownerShare,
+      barberShare: barber.isOwner ? serviceRevenue : serviceRevenue * 0.6
+    };
+  });
 
   return {
     todayRevenue,
@@ -590,20 +412,18 @@ export function getAnalytics(date = todayString()): AnalyticsSummary {
     yesterdayCuts,
     revenueDeltaPercent:
       yesterdayRevenue === 0
-        ? todayRevenue > 0
-          ? 100
-          : 0
+        ? todayRevenue > 0 ? 100 : 0
         : Math.round(((todayRevenue - yesterdayRevenue) / yesterdayRevenue) * 100),
     attendanceRate,
+    onlineBookingCount,
+    walkInCount,
     productRevenue,
-    ownerCommission: barberPerformance.reduce((sum, item) => sum + item.ownerShare, 0),
+    ownerCommission: barberPerformance.reduce((sum, b) => sum + b.ownerShare, 0),
     barberPerformance
   };
 }
 
-function serviceAmount(appointment: Appointment) {
-  if (typeof appointment.finalServiceAmount === "number") {
-    return appointment.finalServiceAmount;
-  }
-  return state().services.find((item) => item.id === appointment.serviceId)?.price ?? 0;
+// Not exported — analytics helper uses inline service lookup instead
+export function _formatTime(time: string) {
+  return formatTime(time);
 }

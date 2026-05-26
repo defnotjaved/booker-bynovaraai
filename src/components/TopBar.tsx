@@ -1,10 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { BarChart3, CalendarDays, LogIn, LogOut, Settings, Scissors } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { BarChart3, CalendarDays, LogIn, LogOut, Settings, Scissors, Clock } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 
 type TopBarVariant = "public" | "dashboard";
+
+const DASH_TABS = [
+  { href: "/dashboard",            label: "Today",     icon: Clock },
+  { href: "/dashboard/calendar",   label: "Calendar",  icon: CalendarDays },
+  { href: "/dashboard/analytics",  label: "Analytics", icon: BarChart3 },
+  { href: "/dashboard/settings",   label: "Settings",  icon: Settings },
+];
 
 export function TopBar({
   variant = "dashboard",
@@ -14,16 +22,30 @@ export function TopBar({
   onBookNow?: () => void;
 }) {
   const { data: session } = useSession();
+  const pathname = usePathname();
+  const isOwner = (session?.user as { role?: string } | undefined)?.role === "owner";
+  const visibleTabs = isOwner
+    ? DASH_TABS
+    : DASH_TABS.filter((tab) => tab.href === "/dashboard" || tab.href === "/dashboard/calendar");
+
+  const initials = session?.user?.name
+    ? session.user.name.charAt(0).toUpperCase()
+    : "?";
 
   return (
     <header className="topbar">
+      {/* Brand */}
       <Link className="brand" href="/">
-        <span className="brand-mark">
+        <span className="brand-icon">
           <Scissors size={18} />
         </span>
-        <span>IconBook</span>
+        <span>
+          <span className="brand-dim">Icon</span>
+          <span className="brand-bold">Book</span>
+        </span>
       </Link>
 
+      {/* Nav */}
       {variant === "public" ? (
         <nav className="nav" aria-label="Primary">
           <a href="#services">Services</a>
@@ -32,54 +54,55 @@ export function TopBar({
           <a href="#contact">Contact</a>
         </nav>
       ) : (
-        <nav className="nav" aria-label="Primary">
-          <Link href="/dashboard">
-            <CalendarDays size={16} />
-            Today
-          </Link>
-          <Link href="/dashboard/calendar">
-            <CalendarDays size={16} />
-            Calendar
-          </Link>
-          <Link href="/dashboard/analytics">
-            <BarChart3 size={16} />
-            Analytics
-          </Link>
-          <Link href="/dashboard/settings">
-            <Settings size={16} />
-            Settings
-          </Link>
+        <nav className="nav-tabs" aria-label="Dashboard">
+          {visibleTabs.map(({ href, label, icon: Icon }) => {
+            const active = href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname.startsWith(href);
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`nav-tab${active ? " active" : ""}`}
+              >
+                <Icon size={15} />
+                {label}
+              </Link>
+            );
+          })}
         </nav>
       )}
 
-      <div className="topbar-user">
+      {/* Right side */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
         {variant === "public" ? (
           <>
             <button
               onClick={onBookNow}
-              className="btn"
-              style={{ background: "var(--accent)", color: "#fff", border: "none", display: "inline-flex", alignItems: "center", gap: 8, minHeight: 38, padding: "8px 18px", fontWeight: 600, borderRadius: 6, cursor: "pointer" }}
+              className="btn btn-primary btn-sm"
             >
               Book Now
             </button>
-            <Link href="/login" className="btn ghost" style={{ display: "inline-flex", alignItems: "center", gap: 8, minHeight: 38, padding: "8px 14px" }}>
-              <LogIn size={16} />
+            <Link href="/login" className="btn btn-ghost btn-sm">
+              <LogIn size={15} />
               Staff login
             </Link>
           </>
         ) : session?.user ? (
           <>
-            <span className="topbar-name">
-              {session.user.name}
-              <span className="tag">{session.user.role}</span>
-            </span>
+            <div className="user-badge">
+              <div className="user-dot">{initials}</div>
+              <div className="user-meta">
+                <div className="user-name">{session.user.name}</div>
+                <div className="user-role">{(session.user as { role?: string }).role ?? "staff"}</div>
+              </div>
+            </div>
             <button
-              className="btn ghost"
+              className="btn btn-ghost btn-sm"
               onClick={() => signOut({ callbackUrl: "/login" })}
               title="Sign out"
             >
-              <LogOut size={16} />
-              Sign out
+              <LogOut size={15} />
             </button>
           </>
         ) : null}

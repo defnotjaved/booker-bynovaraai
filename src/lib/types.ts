@@ -117,6 +117,8 @@ export type AnalyticsSummary = {
   yesterdayCuts: number;
   revenueDeltaPercent: number;
   attendanceRate: number;
+  onlineBookingCount: number;
+  walkInCount: number;
   productRevenue: number;
   ownerCommission: number;
   barberPerformance: Array<{

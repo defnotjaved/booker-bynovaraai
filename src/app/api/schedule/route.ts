@@ -10,7 +10,7 @@ export async function PATCH(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const scheduleRule = updateSchedule(body);
+    const scheduleRule = await updateSchedule(body);
 
     return NextResponse.json({ scheduleRule });
   } catch (error) {

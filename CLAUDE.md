@@ -3,7 +3,7 @@
 ## Project Identity
 - **Name:** IconBook
 - **Purpose:** Booking and shop dashboard for Icon Barbers (Icon Plaza, Aranguez)
-- **Stack:** Next.js 15, React 19, TypeScript, NextAuth v5, in-memory store, framer-motion
+- **Stack:** Next.js 15, React 19, TypeScript, NextAuth v5, Prisma 7 + PostgreSQL, Resend, framer-motion
 - **Theme:** Black (#0a0a0a) and orange (#f47920) — matches ICON BARBERS branding
 
 ## Phase Status
@@ -12,8 +12,8 @@
 | 1 | ✅ Done | Landing page, booking modal, TopBar split, public /api/services |
 | 2 | ✅ Done | Customer profiles + auto-fill, follow-up scheduling, service management |
 | 3A | ✅ Done | Calendar bug fix (7-day week), framer-motion, storefront image, .claude setup |
-| 3B | 🔜 Next | Resend email receipts (RESEND_API_KEY in .env.local) |
-| 3C | 🔜 Next | Prisma + PostgreSQL migration |
+| 3B | ✅ Done | Resend email receipts (sendBookingConfirmation, sendBarberNotification, NotificationLog) |
+| 3C | ✅ Done | Prisma 7 + PostgreSQL migration (adapter-pg, seed, all store functions async) |
 | 3D | 🔜 Next | Full dashboard UI redesign (Recharts analytics, sidebar, Today view) |
 
 ## Key Users
@@ -24,7 +24,7 @@
 | Shastri | shastri@iconbook.local | barber | barber123 |
 
 ## Architecture Rules
-- **No database** — all state is in-memory via `globalThis.__iconBookStore` in `src/lib/store.ts`
+- **Database** — Prisma 7 + PostgreSQL via `@prisma/adapter-pg`. Client singleton in `src/lib/db.ts`. Schema in `prisma/schema.prisma`. Generated client at `src/generated/prisma/client`.
 - **No Tailwind** — custom CSS only, all in `src/app/globals.css`; inline styles in components
 - **No component library** — lucide-react for icons, framer-motion for animation only
 - **Auth** — NextAuth v5 with Credentials provider. Session stored in JWT cookie.
@@ -46,9 +46,14 @@ src/components/
     booking-modal.tsx     — Booking modal wrapper
     barber-scheduling-card.tsx — Booking calendar + slot picker
 src/lib/
-  store.ts                — In-memory data + business logic
+  store.ts                — Async Prisma data layer + business logic
+  db.ts                   — Prisma 7 client singleton (PrismaPg adapter)
+  email.ts                — Resend transactional email (booking confirmation, barber notification)
   types.ts                — TypeScript type definitions
   time.ts                 — Date/time utilities
+prisma/
+  schema.prisma           — 9 models (User, BarberProfile, Service, Customer, Appointment, ScheduleRule, ScheduleException, NotificationLog, Settings)
+  seed.ts                 — Demo data seeder (run: npm run db:seed)
 src/app/
   layout.tsx              — Root layout with Providers
   page.tsx                — Home (public booking)
@@ -89,26 +94,21 @@ public/
 
 ## Development
 ```bash
-npm run dev   # http://localhost:3000
+# First-time setup (after cloning)
+cp .env.example .env.local        # fill DATABASE_URL, RESEND_API_KEY, etc.
+npx prisma migrate dev            # run migrations
+npm run db:seed                   # seed demo data
+
+# Daily dev
+npm run dev                       # http://localhost:3000
+npm run db:studio                 # Prisma Studio at http://localhost:5555
 ```
 
-## Next Phase — 3B: Resend Email Receipts
-```bash
-npm install resend
-```
-1. Create `src/lib/email.ts` — `sendBookingConfirmation()`, `sendBarberNotification()`, `sendReceipt()`
-2. Add `RESEND_API_KEY=re_xxx` and `EMAIL_FROM=bookings@domain.com` to `.env.local`
-3. Wire into `src/lib/store.ts` — call on `createBooking()` and `updateAppointment(status→completed)`
-4. Update `NotificationLog` status to `"sent"` or `"failed"` based on return value
-
-## Next Phase — 3C: Prisma + PostgreSQL
-1. `npm install prisma @prisma/client`
-2. `npx prisma init --datasource-provider postgresql`
-3. Add `DATABASE_URL` to `.env.local`
-4. Create `prisma/schema.prisma` (8 models: User, BarberProfile, Service, Customer, Appointment, ScheduleRule, ScheduleException, NotificationLog, Settings)
-5. Replace `src/lib/store.ts` exports with Prisma queries — keep identical function signatures
-6. Create `src/lib/db.ts` — Prisma client singleton
-7. Seed with `prisma/seed.ts`
+## Next Phase — 3D: Dashboard UI Redesign
+- Recharts analytics (revenue chart, cut count trend)
+- Persistent sidebar navigation
+- Today view (live appointment queue, chair status)
+- Barber performance cards (owner-only)
 
 ## Role Enforcement
 - Middleware: `/dashboard/*` requires valid session
@@ -117,8 +117,8 @@ npm install resend
 - Bootstrap: appointments filtered by `barberId` for barber role users
 
 ## DO NOT
-- Add a real database yet (keep in-memory until Phase 3C)
 - Add Tailwind or any CSS framework
 - Store passwords in plaintext in commits (auth.ts uses bcryptjs)
 - Expose passwords in API responses — User type returned to client has no password field
+- Mutate `globalThis.__iconBookStore` — that in-memory store has been removed
 - Use WiPay/FAC payment gateway (deferred to future phase)

@@ -20,3 +20,12 @@ CLAUDE.local.md
 # OS
 .DS_Store
 Thumbs.db
+
+# Dev artifacts / screenshots
+*.png
+*.log
+OVERNIGHT_FIX_REPORT.md
+SETUP.html
+.mcp.json
+
+/src/generated/prisma

@@ -70,6 +70,7 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
       {/* ── HERO ── */}
       <section
         id="hero"
+        className="hero-section"
         style={{
           minHeight: "100vh",
           position: "relative",
@@ -77,7 +78,7 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
           display: "flex",
           alignItems: "center",
           background: "linear-gradient(135deg, #0a0a0a 55%, #1c0d00 100%)",
-          padding: "120px 5vw 80px",
+          padding: "clamp(80px, 10vh, 120px) 5vw clamp(60px, 8vh, 80px)",
         }}
       >
         {/* Subtle background glow behind text */}
@@ -192,51 +193,16 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
             >
               <a
                 href="#book"
-                style={{
-                  background: "var(--accent)",
-                  color: "#fff",
-                  border: "none",
-                  padding: "15px 40px",
-                  fontSize: 16,
-                  fontWeight: 700,
-                  borderRadius: 8,
-                  cursor: "pointer",
-                  letterSpacing: "0.02em",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 8,
-                  boxShadow: "0 0 32px rgba(244,121,32,0.35)",
-                  textDecoration: "none",
-                  transition: "opacity 0.15s, transform 0.15s",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = "0.9";
-                  e.currentTarget.style.transform = "translateY(-1px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = "1";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
+                className="btn btn-primary btn-lg"
+                style={{ animation: "pulseGlow 2.5s ease-in-out infinite", textDecoration: "none" }}
               >
                 Book Appointment
                 <ChevronRight size={16} />
               </a>
               <a
                 href="#about"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  padding: "15px 36px",
-                  fontSize: 16,
-                  fontWeight: 600,
-                  borderRadius: 8,
-                  border: "1px solid rgba(255,255,255,0.15)",
-                  color: "var(--ink)",
-                  textDecoration: "none",
-                  transition: "border-color 0.15s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.borderColor = "rgba(244,121,32,0.5)")}
-                onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)")}
+                className="btn btn-ghost btn-lg"
+                style={{ textDecoration: "none" }}
               >
                 Learn More
               </a>
@@ -247,13 +213,14 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.7 }}
               style={{
-                display: "inline-flex",
+                display: "flex",
                 marginTop: 52,
                 flexWrap: "wrap",
                 border: "1px solid rgba(255,255,255,0.08)",
                 borderRadius: 12,
                 background: "rgba(255,255,255,0.03)",
-                overflow: "hidden",
+                width: "fit-content",
+                maxWidth: "100%",
               }}
             >
               {[
@@ -264,12 +231,13 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
                 <div
                   key={stat.label}
                   style={{
-                    padding: "18px 28px",
+                    padding: "16px 24px",
                     borderRight: i < 2 ? "1px solid rgba(255,255,255,0.08)" : "none",
                     textAlign: "center",
+                    flex: "1 1 auto",
                   }}
                 >
-                  <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--accent)" }}>
+                  <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "var(--accent)", fontFamily: "'JetBrains Mono', 'Fira Code', monospace" }}>
                     {stat.value}
                   </div>
                   <div style={{ fontSize: 11, color: "var(--muted)", marginTop: 3 }}>{stat.label}</div>
@@ -484,7 +452,7 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
               {[1, 2, 3, 4, 5].map((s) => (
                 <Star key={s} size={15} fill="var(--accent)" color="var(--accent)" />
               ))}
-              <span style={{ fontWeight: 700, fontSize: 15, marginLeft: 4 }}>5.0</span>
+              <span style={{ fontWeight: 700, fontSize: 15, marginLeft: 4, fontFamily: "'JetBrains Mono', monospace" }}>5.0</span>
               <span style={{ color: "var(--muted)", fontSize: 13 }}>· 174 reviews</span>
             </div>
           </div>
@@ -543,30 +511,8 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
 
             <a
               href="#book"
-              style={{
-                marginTop: 36,
-                background: "transparent",
-                border: "1px solid var(--accent)",
-                color: "var(--accent)",
-                padding: "12px 28px",
-                borderRadius: 8,
-                fontSize: 14,
-                fontWeight: 700,
-                cursor: "pointer",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 8,
-                textDecoration: "none",
-                transition: "background 0.15s, color 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "var(--accent)";
-                e.currentTarget.style.color = "#fff";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.color = "var(--accent)";
-              }}
+              className="btn btn-secondary"
+              style={{ marginTop: 36, textDecoration: "none" }}
             >
               Book a Visit
               <ChevronRight size={14} />
@@ -655,24 +601,14 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
                 key={service.id}
                 variants={fadeUp}
                 transition={{ delay: i * 0.08 }}
+                whileHover={{ y: -3, scale: 1.015 }}
+                className="card card-hover"
                 style={{
-                  background: "var(--bg)",
-                  border: "1px solid var(--line)",
-                  borderRadius: 12,
                   padding: "28px 24px",
                   display: "flex",
                   flexDirection: "column",
                   gap: 12,
-                  transition: "border-color 0.2s, box-shadow 0.2s",
                   cursor: "pointer",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
-                  (e.currentTarget as HTMLElement).style.boxShadow = "0 0 24px rgba(244,121,32,0.1)";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.borderColor = "var(--line)";
-                  (e.currentTarget as HTMLElement).style.boxShadow = "none";
                 }}
               >
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -686,6 +622,7 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
                       fontSize: 15,
                       fontWeight: 800,
                       whiteSpace: "nowrap",
+                      fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
                     }}
                   >
                     TT${service.price}
@@ -697,29 +634,8 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
                 </div>
                 <a
                   href="#book"
-                  style={{
-                    marginTop: 8,
-                    background: "transparent",
-                    border: "1px solid var(--accent)",
-                    color: "var(--accent)",
-                    borderRadius: 6,
-                    padding: "10px 16px",
-                    fontSize: 14,
-                    fontWeight: 600,
-                    cursor: "pointer",
-                    textDecoration: "none",
-                    display: "block",
-                    textAlign: "center",
-                    transition: "background 0.15s, color 0.15s",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "var(--accent)";
-                    e.currentTarget.style.color = "#fff";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.color = "var(--accent)";
-                  }}
+                  className="btn btn-secondary btn-sm"
+                  style={{ marginTop: 8, textDecoration: "none", textAlign: "center", display: "block" }}
                 >
                   Book This Service
                 </a>
@@ -775,12 +691,9 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
                 key={i}
                 variants={fadeUp}
                 transition={{ delay: i * 0.1 }}
-                style={{
-                  background: "var(--panel)",
-                  border: "1px solid var(--line)",
-                  borderRadius: 12,
-                  padding: "28px 24px",
-                }}
+                whileHover={{ y: -3, scale: 1.015 }}
+                className="card card-hover"
+                style={{ padding: "28px 24px" }}
               >
                 <div style={{ display: "flex", gap: 4, marginBottom: 16 }}>
                   {Array.from({ length: review.stars }).map((_, s) => (
@@ -840,29 +753,8 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
           </p>
           <a
             href="#book"
-            style={{
-              display: "inline-block",
-              background: "var(--accent)",
-              color: "#fff",
-              border: "none",
-              padding: "17px 48px",
-              fontSize: 17,
-              fontWeight: 700,
-              borderRadius: 8,
-              cursor: "pointer",
-              letterSpacing: "0.02em",
-              boxShadow: "0 0 40px rgba(244,121,32,0.4)",
-              textDecoration: "none",
-              transition: "opacity 0.15s, transform 0.15s",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "0.9";
-              e.currentTarget.style.transform = "translateY(-2px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "1";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
+            className="btn btn-primary btn-lg"
+            style={{ animation: "pulseGlow 2.5s ease-in-out infinite", textDecoration: "none" }}
           >
             Book Now — It&apos;s Free
           </a>
@@ -918,23 +810,15 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
                 key={item.label}
                 variants={fadeUp}
                 transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -3, scale: 1.015 }}
+                className="card card-hover"
                 style={{
-                  background: "var(--panel)",
-                  border: "1px solid var(--line)",
-                  borderRadius: 12,
                   padding: "28px 24px",
                   display: "flex",
                   flexDirection: "column",
                   gap: 12,
                   alignItems: "flex-start",
-                  transition: "border-color 0.2s",
                 }}
-                onMouseEnter={(e) =>
-                  ((e.currentTarget as HTMLElement).style.borderColor = "rgba(244,121,32,0.4)")
-                }
-                onMouseLeave={(e) =>
-                  ((e.currentTarget as HTMLElement).style.borderColor = "var(--line)")
-                }
               >
                 {item.icon}
                 <div>
