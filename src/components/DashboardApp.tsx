@@ -565,36 +565,38 @@ function AnalyticsPanel({ data, canSeePerformance }: { data: BootstrapData; canS
           <BarChart3 size={17} style={{ color: "var(--ink-3)" }} />
         </div>
         {canSeePerformance ? (
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Barber</th>
-                <th>Cuts</th>
-                <th>Service Rev</th>
-                <th>Owner Share</th>
-                <th>Barber Share</th>
-              </tr>
-            </thead>
-            <tbody>
-              {analytics.barberPerformance.map((item) => {
-                const barber = data.barbers.find((b) => b.id === item.barberId);
-                return (
-                  <tr key={item.barberId}>
-                    <td>
-                      <div className="barber-c">
-                        <div className="mini-av">{barber?.name.charAt(0)}</div>
-                        {barber?.name}
-                      </div>
-                    </td>
-                    <td>{item.cuts}</td>
-                    <td><span className="rev-val">{formatMoney(item.serviceRevenue)}</span></td>
-                    <td>{formatMoney(item.ownerShare)}</td>
-                    <td>{formatMoney(item.barberShare)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="table-scroll">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Barber</th>
+                  <th>Cuts</th>
+                  <th>Service Rev</th>
+                  <th>Owner Share</th>
+                  <th>Barber Share</th>
+                </tr>
+              </thead>
+              <tbody>
+                {analytics.barberPerformance.map((item) => {
+                  const barber = data.barbers.find((b) => b.id === item.barberId);
+                  return (
+                    <tr key={item.barberId}>
+                      <td>
+                        <div className="barber-c">
+                          <div className="mini-av">{barber?.name.charAt(0)}</div>
+                          {barber?.name}
+                        </div>
+                      </td>
+                      <td>{item.cuts}</td>
+                      <td><span className="rev-val">{formatMoney(item.serviceRevenue)}</span></td>
+                      <td>{formatMoney(item.ownerShare)}</td>
+                      <td>{formatMoney(item.barberShare)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div className="empty" style={{ margin: 20 }}>Performance comparison is owner-only.</div>
         )}
@@ -660,42 +662,44 @@ function ServicesPanel({ data, onChange }: { data: BootstrapData; onChange: () =
       <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--line)" }}>
         <h3 style={{ fontSize: 15, fontWeight: 700 }}>Services</h3>
       </div>
-      <table className="data-table">
-        <thead>
-          <tr><th>Name</th><th>Price</th><th>Duration</th><th>Status</th><th></th></tr>
-        </thead>
-        <tbody>
-          {data.services.map((s) =>
-            editingId === s.id ? (
-              <tr key={s.id}>
-                <td><input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} style={{ minHeight: 34 }} /></td>
-                <td><input type="number" value={editForm.price} onChange={(e) => setEditForm((f) => ({ ...f, price: e.target.value }))} style={{ width: 80, minHeight: 34 }} /></td>
-                <td><input type="number" value={editForm.durationMinutes} onChange={(e) => setEditForm((f) => ({ ...f, durationMinutes: e.target.value }))} style={{ width: 64, minHeight: 34 }} /></td>
-                <td />
-                <td>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <button className="btn btn-primary btn-sm" type="button" disabled={saving} onClick={() => saveEdit(s.id)}>Save</button>
-                    <button className="btn btn-ghost btn-sm" type="button" onClick={() => setEditingId(null)}>Cancel</button>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              <tr key={s.id} style={{ opacity: s.active === false ? 0.5 : 1 }}>
-                <td>{s.name}</td>
-                <td><span className="rev-val">{formatMoney(s.price)}</span></td>
-                <td style={{ color: "var(--ink-3)" }}>{s.durationMinutes} min</td>
-                <td><span className={`chip ${s.active === false ? "chip-cancelled" : "chip-completed"}`}>{s.active === false ? "Inactive" : "Active"}</span></td>
-                <td>
-                  <div style={{ display: "flex", gap: 6 }}>
-                    <button className="btn btn-secondary btn-sm" type="button" onClick={() => startEdit(s)}>Edit</button>
-                    <button className="btn btn-ghost btn-sm" type="button" onClick={() => toggleActive(s)}>{s.active === false ? "Activate" : "Deactivate"}</button>
-                  </div>
-                </td>
-              </tr>
-            )
-          )}
-        </tbody>
-      </table>
+      <div className="table-scroll">
+        <table className="data-table">
+          <thead>
+            <tr><th>Name</th><th>Price</th><th>Duration</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+            {data.services.map((s) =>
+              editingId === s.id ? (
+                <tr key={s.id}>
+                  <td><input value={editForm.name} onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))} style={{ minHeight: 34 }} /></td>
+                  <td><input type="number" value={editForm.price} onChange={(e) => setEditForm((f) => ({ ...f, price: e.target.value }))} style={{ width: 80, minHeight: 34 }} /></td>
+                  <td><input type="number" value={editForm.durationMinutes} onChange={(e) => setEditForm((f) => ({ ...f, durationMinutes: e.target.value }))} style={{ width: 64, minHeight: 34 }} /></td>
+                  <td />
+                  <td>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button className="btn btn-primary btn-sm" type="button" disabled={saving} onClick={() => saveEdit(s.id)}>Save</button>
+                      <button className="btn btn-ghost btn-sm" type="button" onClick={() => setEditingId(null)}>Cancel</button>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                <tr key={s.id} style={{ opacity: s.active === false ? 0.5 : 1 }}>
+                  <td>{s.name}</td>
+                  <td><span className="rev-val">{formatMoney(s.price)}</span></td>
+                  <td style={{ color: "var(--ink-3)" }}>{s.durationMinutes} min</td>
+                  <td><span className={`chip ${s.active === false ? "chip-cancelled" : "chip-completed"}`}>{s.active === false ? "Inactive" : "Active"}</span></td>
+                  <td>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <button className="btn btn-secondary btn-sm" type="button" onClick={() => startEdit(s)}>Edit</button>
+                      <button className="btn btn-ghost btn-sm" type="button" onClick={() => toggleActive(s)}>{s.active === false ? "Activate" : "Deactivate"}</button>
+                    </div>
+                  </td>
+                </tr>
+              )
+            )}
+          </tbody>
+        </table>
+      </div>
 
       <div style={{ padding: "12px 20px 20px" }}>
         {adding ? (
@@ -761,51 +765,53 @@ function SettingsPanel({ data, canEdit, onChange }: { data: BootstrapData; canEd
 
       {/* Weekly availability */}
       <div className="card" style={{ padding: 0, overflow: "hidden", marginBottom: 20 }}>
-        <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--line)" }}>
-          <h3 style={{ fontSize: 15, fontWeight: 700 }}>Weekly Availability</h3>
+      <div style={{ padding: "16px 20px", borderBottom: "1px solid var(--line)" }}>
+        <h3 style={{ fontSize: 15, fontWeight: 700 }}>Weekly Availability</h3>
+      </div>
+        <div className="table-scroll">
+          <table className="data-table">
+            <thead>
+              <tr><th>Barber</th><th>Day</th><th>Working</th><th>Start</th><th>End</th></tr>
+            </thead>
+            <tbody>
+              {data.scheduleRules.map((rule) => {
+                const barber = data.barbers.find((b) => b.id === rule.barberId);
+                return (
+                  <tr key={rule.id}>
+                    <td>
+                      <div className="barber-c">
+                        <div className="mini-av">{barber?.name.charAt(0)}</div>
+                        {barber?.name}
+                      </div>
+                    </td>
+                    <td style={{ color: "var(--ink-3)" }}>{DAY_NAMES[rule.dayOfWeek]}</td>
+                    <td>
+                      <input
+                        type="checkbox"
+                        disabled={!canEdit}
+                        checked={rule.isWorking}
+                        onChange={(e) => updateSchedule(rule.id, { isWorking: e.target.checked })}
+                        style={{ accentColor: "var(--accent)", width: 16, height: 16, minHeight: "unset" }}
+                      />
+                    </td>
+                    <td>
+                      <input type="time" disabled={!canEdit} value={rule.startTime}
+                        onChange={(e) => updateSchedule(rule.id, { startTime: e.target.value })}
+                        style={{ width: 110, minHeight: 34, padding: "4px 8px" }}
+                      />
+                    </td>
+                    <td>
+                      <input type="time" disabled={!canEdit} value={rule.endTime}
+                        onChange={(e) => updateSchedule(rule.id, { endTime: e.target.value })}
+                        style={{ width: 110, minHeight: 34, padding: "4px 8px" }}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
-        <table className="data-table">
-          <thead>
-            <tr><th>Barber</th><th>Day</th><th>Working</th><th>Start</th><th>End</th></tr>
-          </thead>
-          <tbody>
-            {data.scheduleRules.map((rule) => {
-              const barber = data.barbers.find((b) => b.id === rule.barberId);
-              return (
-                <tr key={rule.id}>
-                  <td>
-                    <div className="barber-c">
-                      <div className="mini-av">{barber?.name.charAt(0)}</div>
-                      {barber?.name}
-                    </div>
-                  </td>
-                  <td style={{ color: "var(--ink-3)" }}>{DAY_NAMES[rule.dayOfWeek]}</td>
-                  <td>
-                    <input
-                      type="checkbox"
-                      disabled={!canEdit}
-                      checked={rule.isWorking}
-                      onChange={(e) => updateSchedule(rule.id, { isWorking: e.target.checked })}
-                      style={{ accentColor: "var(--accent)", width: 16, height: 16, minHeight: "unset" }}
-                    />
-                  </td>
-                  <td>
-                    <input type="time" disabled={!canEdit} value={rule.startTime}
-                      onChange={(e) => updateSchedule(rule.id, { startTime: e.target.value })}
-                      style={{ width: 110, minHeight: 34, padding: "4px 8px" }}
-                    />
-                  </td>
-                  <td>
-                    <input type="time" disabled={!canEdit} value={rule.endTime}
-                      onChange={(e) => updateSchedule(rule.id, { endTime: e.target.value })}
-                      style={{ width: 110, minHeight: 34, padding: "4px 8px" }}
-                    />
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
       </div>
 
       {canEdit ? <ServicesPanel data={data} onChange={onChange} /> : null}

@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { BarberSchedulingCard } from "./barber-scheduling-card";
+import { useCallback, useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase-client";
 import type { Service } from "@/lib/types";
+import { BarberSchedulingCard } from "./barber-scheduling-card";
 
 interface Barber {
   id: string;
@@ -23,29 +23,33 @@ interface DaySchedule {
 }
 
 function formatTime24to12(time24: string) {
-  const [h, m] = time24.split(":").map(Number);
-  const ampm = h >= 12 ? "PM" : "AM";
-  const hour = h % 12 || 12;
-  return `${hour}:${m.toString().padStart(2, "0")} ${ampm}`;
+  const [hours, minutes] = time24.split(":").map(Number);
+  const suffix = hours >= 12 ? "PM" : "AM";
+  const hour = hours % 12 || 12;
+  return `${hour}:${minutes.toString().padStart(2, "0")} ${suffix}`;
 }
 
-function addDaysToDate(dateStr: string, days: number) {
-  const d = new Date(dateStr);
-  d.setDate(d.getDate() + days);
-  return d.toISOString().split("T")[0];
+function addDaysToDate(dateString: string, days: number) {
+  const date = new Date(dateString);
+  date.setDate(date.getDate() + days);
+  return date.toISOString().split("T")[0];
 }
 
-function formatDateLabel(dateStr: string) {
-  const d = new Date(dateStr + "T00:00:00");
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+function formatDateLabel(dateString: string) {
+  const date = new Date(`${dateString}T00:00:00`);
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-function getDayName(dateStr: string, index: number, weekOffset: number) {
-  const d = new Date(dateStr + "T00:00:00");
+function getDayName(dateString: string, weekOffset: number) {
+  const date = new Date(`${dateString}T00:00:00`);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  if (weekOffset === 0 && d.getTime() === today.getTime()) return "Today";
-  return d.toLocaleDateString("en-US", { weekday: "short" });
+
+  if (weekOffset === 0 && date.getTime() === today.getTime()) {
+    return "Today";
+  }
+
+  return date.toLocaleDateString("en-US", { weekday: "short" });
 }
 
 function todayISO() {
@@ -70,77 +74,83 @@ export function BookingModal({
   const [weekSchedule, setWeekSchedule] = useState<DaySchedule[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
-  const activeBarbers = barbers.filter((b) => b.active);
+  const activeBarbers = barbers.filter((barber) => barber.active);
 
   const loadWeekSlots = useCallback(async (barberId: string, offset: number) => {
     setLoadingSlots(true);
-    const today = todayISO();
-    // 7 days per week
-    const days = Array.from({ length: 7 }, (_, i) => addDaysToDate(today, offset * 7 + i));
+    const startDate = todayISO();
+    const days = Array.from({ length: 7 }, (_, index) => addDaysToDate(startDate, offset * 7 + index));
 
-    const results: DaySchedule[] = await Promise.all(
-      days.map(async (date, i) => {
-        try {
-          const params = new URLSearchParams({ date });
-          if (barberId) params.set("barberId", barberId);
-          const res = await fetch(`/api/slots?${params}`);
-          const data = await res.json();
-          const slots: { time: string; available: boolean }[] = (data.slots ?? []).map(
-            (s: { time: string; available: boolean }) => ({
-              time: formatTime24to12(s.time),
-              available: s.available,
-            })
-          );
-          return {
-            date: formatDateLabel(date),
-            dayName: getDayName(date, i, offset),
-            dayNumber: new Date(date + "T00:00:00").getDate(),
-            slots,
-            hasAvailability: slots.some((s) => s.available),
-          };
-        } catch {
-          return {
-            date: formatDateLabel(date),
-            dayName: getDayName(date, i, offset),
-            dayNumber: new Date(date + "T00:00:00").getDate(),
-            slots: [],
-            hasAvailability: false,
-          };
-        }
-      })
-    );
+    try {
+      const results = await Promise.all(
+        days.map(async (dateString) => {
+          try {
+            const params = new URLSearchParams({ date: dateString });
+            if (barberId) params.set("barberId", barberId);
 
-    setWeekSchedule(results);
-    setLoadingSlots(false);
+            const response = await fetch(`/api/slots?${params.toString()}`);
+            const payload = await response.json();
+            const slots = (payload.slots ?? []).map(
+              (slot: { time: string; available: boolean }) => ({
+                time: formatTime24to12(slot.time),
+                available: slot.available,
+              })
+            );
+
+            return {
+              date: formatDateLabel(dateString),
+              dayName: getDayName(dateString, offset),
+              dayNumber: new Date(`${dateString}T00:00:00`).getDate(),
+              slots,
+              hasAvailability: slots.some((slot: { available: boolean }) => slot.available),
+            };
+          } catch {
+            return {
+              date: formatDateLabel(dateString),
+              dayName: getDayName(dateString, offset),
+              dayNumber: new Date(`${dateString}T00:00:00`).getDate(),
+              slots: [],
+              hasAvailability: false,
+            };
+          }
+        })
+      );
+
+      setWeekSchedule(results);
+    } finally {
+      setLoadingSlots(false);
+    }
   }, []);
 
-  // Load on open (modal) or on mount (inline)
   useEffect(() => {
     if (isOpen || variant === "inline") {
       loadWeekSlots(selectedBarberId, weekOffset);
     }
-  }, [isOpen, variant, selectedBarberId, weekOffset, loadWeekSlots]);
+  }, [isOpen, loadWeekSlots, selectedBarberId, variant, weekOffset]);
 
-  // Re-fetch slots live whenever any appointment is created or updated
   useEffect(() => {
     const channel = supabase
       .channel("appointments-changes")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "appointments" },
-        () => { loadWeekSlots(selectedBarberId, weekOffset); }
+        () => {
+          void loadWeekSlots(selectedBarberId, weekOffset);
+        }
       )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
-  }, [selectedBarberId, weekOffset, loadWeekSlots]);
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [loadWeekSlots, selectedBarberId, weekOffset]);
 
   function handleBarberChange(barberId: string) {
     setSelectedBarberId(barberId);
   }
 
   function handleWeekChange(direction: "prev" | "next") {
-    setWeekOffset((prev) => Math.max(0, direction === "next" ? prev + 1 : prev - 1));
+    setWeekOffset((current) => Math.max(0, direction === "next" ? current + 1 : current - 1));
   }
 
   async function handleConfirm(data: {
@@ -153,18 +163,17 @@ export function BookingModal({
     customerEmail: string;
   }) {
     const today = todayISO();
-    const dayIndex = weekSchedule.findIndex((d) => d.date === data.date);
-    // 7-day multiplier
+    const dayIndex = weekSchedule.findIndex((day) => day.date === data.date);
     const isoDate = addDaysToDate(today, weekOffset * 7 + dayIndex);
 
-    const [timePart, ampm] = data.time.split(" ");
-    const [hStr, mStr] = timePart.split(":");
-    let h = parseInt(hStr, 10);
-    if (ampm === "PM" && h !== 12) h += 12;
-    if (ampm === "AM" && h === 12) h = 0;
-    const startTime = `${h.toString().padStart(2, "0")}:${mStr}`;
+    const [timePart, suffix] = data.time.split(" ");
+    const [hourString, minuteString] = timePart.split(":");
+    let hour = parseInt(hourString, 10);
+    if (suffix === "PM" && hour !== 12) hour += 12;
+    if (suffix === "AM" && hour === 12) hour = 0;
+    const startTime = `${hour.toString().padStart(2, "0")}:${minuteString}`;
 
-    await fetch("/api/appointments", {
+    const response = await fetch("/api/appointments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -178,6 +187,13 @@ export function BookingModal({
         source: "online",
       }),
     });
+
+    await loadWeekSlots(data.barberId, weekOffset);
+
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({ error: "Unable to create booking." }));
+      throw new Error(payload.error ?? "Unable to create booking.");
+    }
   }
 
   const card = (
@@ -192,7 +208,6 @@ export function BookingModal({
     />
   );
 
-  // ── INLINE variant: no overlay, render card directly ──
   if (variant === "inline") {
     return loadingSlots && weekSchedule.length === 0 ? (
       <div
@@ -213,10 +228,9 @@ export function BookingModal({
     );
   }
 
-  // ── MODAL variant: overlay + spring animation ──
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isOpen ? (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -231,7 +245,9 @@ export function BookingModal({
             padding: 16,
             background: "rgba(0,0,0,0.85)",
           }}
-          onClick={(e) => e.target === e.currentTarget && onClose()}
+          onClick={(event) => {
+            if (event.target === event.currentTarget) onClose();
+          }}
         >
           <motion.div
             initial={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -247,6 +263,7 @@ export function BookingModal({
             }}
           >
             <button
+              type="button"
               onClick={onClose}
               style={{
                 position: "absolute",
@@ -286,7 +303,7 @@ export function BookingModal({
             )}
           </motion.div>
         </motion.div>
-      )}
+      ) : null}
     </AnimatePresence>
   );
 }

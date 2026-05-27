@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import { TopBar } from "@/components/TopBar";
 import { BookingModal } from "@/components/ui/booking-modal";
 import { MapPin, Phone, Clock, Star, Scissors, CheckCircle2 } from "lucide-react";
@@ -33,7 +32,7 @@ const REVIEWS = [
 ];
 
 const ABOUT_TEXT =
-  "For over 23 years, The Lounge Barber Salon has been a cornerstone of grooming excellence in Trinidad and Tobago. Renowned for our premium services, our skilled team of barbers delivers personalised attention and exceptional grooming experiences. Combining traditional techniques with modern styles, we remain at the forefront of industry trends, ensuring each haircut, hairstyle, and beard trim is executed with precision and finesse.";
+  "For over 23 years, Icon Barbers has been a trusted destination for grooming excellence in Trinidad and Tobago. Our team blends clean fades, sharp beard work, and consistent personal service so every client leaves looking polished and feeling taken care of.";
 
 const staggerContainer = {
   hidden: {},
@@ -54,15 +53,12 @@ function Section({
   id?: string;
   style?: React.CSSProperties;
 }) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-80px" });
   return (
     <motion.section
       id={id}
-      ref={ref}
       variants={staggerContainer}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
+      initial={false}
+      animate="visible"
       style={style}
     >
       {children}
@@ -282,8 +278,16 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
                   icon-barbers-aranguez.mp4
                 </span>
               </div>
-              <video autoPlay muted loop playsInline style={{ width: "100%", display: "block" }}>
+              <video
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster="/assets/iconbarber1.jpeg"
+                style={{ width: "100%", display: "block", aspectRatio: "4 / 5", objectFit: "cover" }}
+              >
                 <source src="/assets/iconbarbers.mp4" type="video/mp4" />
+                Your browser does not support the shop preview video.
               </video>
               <div
                 style={{

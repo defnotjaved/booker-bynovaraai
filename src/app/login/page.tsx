@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Scissors, LogIn } from "lucide-react";
-import { Suspense } from "react";
+import { signIn } from "next-auth/react";
+import { LogIn, Scissors } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -30,14 +29,14 @@ function LoginForm() {
     if (result?.error) {
       setError("Invalid email or password. Try again.");
       setLoading(false);
-    } else {
-      router.push(callbackUrl);
+      return;
     }
+
+    router.push(callbackUrl);
   }
 
   return (
     <main className="login-shell">
-      {/* ── LEFT: Brand panel ── */}
       <div className="login-brand">
         <div className="login-glow" />
 
@@ -50,7 +49,16 @@ function LoginForm() {
             <span style={{ color: "var(--ink-3)" }}>Icon</span>
             <span style={{ color: "var(--ink)" }}>Book</span>
           </div>
-          <div style={{ fontSize: 15, color: "var(--accent)", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", marginTop: 6 }}>
+          <div
+            style={{
+              fontSize: 15,
+              color: "var(--accent)",
+              fontWeight: 600,
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              marginTop: 6,
+            }}
+          >
             Staff Portal
           </div>
         </div>
@@ -59,47 +67,94 @@ function LoginForm() {
           Premium barbershop management for Trinidad&apos;s finest — Icon Barbers, Aranguez
         </div>
 
-        {/* Stats bar */}
-        <div className="fade-up-3" style={{
-          display: "flex", gap: 0, borderRadius: "var(--radius-lg)",
-          background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)",
-          overflow: "hidden", width: "100%", maxWidth: 320, position: "relative", zIndex: 1,
-        }}>
+        <div
+          className="fade-up-3"
+          style={{
+            display: "flex",
+            gap: 0,
+            borderRadius: "var(--radius-lg)",
+            background: "rgba(255,255,255,0.04)",
+            border: "1px solid rgba(255,255,255,0.07)",
+            overflow: "hidden",
+            width: "100%",
+            maxWidth: 320,
+            position: "relative",
+            zIndex: 1,
+          }}
+        >
           {[
-            { value: "23+",    label: "Years" },
+            { value: "23+", label: "Years" },
             { value: "5.0 ★", label: "Rating" },
-            { value: "174+",   label: "Reviews" },
-          ].map((s, i) => (
-            <div key={s.label} style={{
-              flex: 1, padding: "16px 12px", textAlign: "center",
-              borderRight: i < 2 ? "1px solid rgba(255,255,255,0.07)" : "none",
-            }}>
-              <div style={{ fontSize: "1.4rem", fontWeight: 800, color: "var(--accent)", fontFamily: "JetBrains Mono,monospace" }}>{s.value}</div>
-              <div style={{ fontSize: 11, color: "var(--ink-3)", marginTop: 3, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }}>{s.label}</div>
+            { value: "174+", label: "Reviews" },
+          ].map((stat, index) => (
+            <div
+              key={stat.label}
+              style={{
+                flex: 1,
+                padding: "16px 12px",
+                textAlign: "center",
+                borderRight: index < 2 ? "1px solid rgba(255,255,255,0.07)" : "none",
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "1.4rem",
+                  fontWeight: 800,
+                  color: "var(--accent)",
+                  fontFamily: "JetBrains Mono, monospace",
+                }}
+              >
+                {stat.value}
+              </div>
+              <div
+                style={{
+                  fontSize: 11,
+                  color: "var(--ink-3)",
+                  marginTop: 3,
+                  fontWeight: 600,
+                  letterSpacing: "0.06em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {stat.label}
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Decorative scissors */}
         <div style={{ position: "absolute", bottom: 30, right: 30, opacity: 0.06, zIndex: 0 }}>
           <Scissors size={120} color="#fff" />
         </div>
-        <div style={{ position: "absolute", top: 30, left: 30, opacity: 0.04, zIndex: 0, transform: "rotate(-30deg)" }}>
+        <div
+          style={{
+            position: "absolute",
+            top: 30,
+            left: 30,
+            opacity: 0.04,
+            zIndex: 0,
+            transform: "rotate(-30deg)",
+          }}
+        >
           <Scissors size={80} color="#fff" />
         </div>
       </div>
 
-      {/* ── RIGHT: Login form ── */}
       <div className="login-form-side">
         <div className="login-card fade-up">
-          {/* Header */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: "var(--radius-md)",
-                background: "var(--accent)", color: "#fff",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: "var(--radius-md)",
+                  background: "var(--accent)",
+                  color: "#fff",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <Scissors size={20} />
               </div>
               <div>
@@ -114,7 +169,6 @@ function LoginForm() {
             <div className="login-sub">Enter your staff credentials to access the dashboard</div>
           </div>
 
-          {/* Form */}
           <form className="form-stack" onSubmit={handleSubmit}>
             <div className="field">
               <label htmlFor="email">Email address</label>
@@ -123,7 +177,7 @@ function LoginForm() {
                 type="email"
                 autoComplete="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(event) => setEmail(event.target.value)}
                 placeholder="you@iconbook.local"
                 style={{ minHeight: 52 }}
                 required
@@ -136,7 +190,7 @@ function LoginForm() {
                 type="password"
                 autoComplete="current-password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(event) => setPassword(event.target.value)}
                 placeholder="••••••••"
                 style={{ minHeight: 52 }}
                 required
@@ -156,13 +210,17 @@ function LoginForm() {
             </button>
           </form>
 
-          <div style={{
-            textAlign: "center", fontSize: 12, color: "var(--ink-3)",
-            borderTop: "1px solid var(--line)", paddingTop: 16, marginTop: 4,
-          }}>
-            <span style={{ fontFamily: "JetBrains Mono,monospace", fontSize: 11 }}>
-              Anil → admin123 &nbsp;·&nbsp; Barbers → barber123
-            </span>
+          <div
+            style={{
+              textAlign: "center",
+              fontSize: 12,
+              color: "var(--ink-3)",
+              borderTop: "1px solid var(--line)",
+              paddingTop: 16,
+              marginTop: 4,
+            }}
+          >
+            Use your assigned staff email and password to access the dashboard.
           </div>
         </div>
       </div>

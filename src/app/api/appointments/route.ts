@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createBooking } from "@/lib/store";
+import { BookingConflictError, createBooking } from "@/lib/store";
 import { auth } from "@/auth";
 
 export async function POST(request: NextRequest) {
@@ -26,6 +26,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ appointment }, { status: 201 });
   } catch (error) {
+    if (error instanceof BookingConflictError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unable to create booking." },
       { status: 400 }

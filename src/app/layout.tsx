@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import "./globals.css";
+import { Inter, JetBrains_Mono, Sora } from "next/font/google";
 import { Providers } from "@/components/Providers";
-import { Sora, Inter, JetBrains_Mono } from "next/font/google";
+import "./globals.css";
 
 const sora = Sora({
   subsets: ["latin"],
@@ -26,7 +26,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "IconBook — Icon Barbers",
-  description: "Book your appointment at Icon Barbers, Aranguez, Trinidad. Professional grooming since 2001.",
+  description:
+    "Book your appointment at Icon Barbers, Aranguez, Trinidad. Professional grooming since 2001.",
 };
 
 export default function RootLayout({

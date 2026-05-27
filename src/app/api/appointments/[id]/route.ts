@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { updateAppointment } from "@/lib/store";
+import { BookingConflictError, updateAppointment } from "@/lib/store";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 
@@ -27,6 +27,10 @@ export async function PATCH(
 
     return NextResponse.json({ appointment });
   } catch (error) {
+    if (error instanceof BookingConflictError) {
+      return NextResponse.json({ error: error.message }, { status: 409 });
+    }
+
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Unable to update appointment." },
       { status: 400 }

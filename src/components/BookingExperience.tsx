@@ -76,6 +76,11 @@ export function BookingExperience({ barberSlug }: BookingExperienceProps) {
       const nextSlots = await loadSlots(form.date, form.barberId || undefined);
       setSlots(nextSlots.slots);
     } catch (err) {
+      const nextSlots = await loadSlots(form.date, form.barberId || undefined).catch(() => null);
+      if (nextSlots) {
+        setSlots(nextSlots.slots);
+        setForm((current) => ({ ...current, startTime: "" }));
+      }
       setError(err instanceof Error ? err.message : "Unable to create booking.");
     } finally {
       setSubmitting(false);
@@ -265,9 +270,9 @@ export function BookingExperience({ barberSlug }: BookingExperienceProps) {
           ) : null}
 
           {error ? <p className="down">{error}</p> : null}
-          <button className="btn" disabled={!form.startTime || submitting}>
+          <button className="btn btn-primary" disabled={!form.startTime || submitting}>
             <Send size={17} />
-            {submitting ? "Booking..." : "Confirm booking"}
+            {submitting ? "Booking…" : "Confirm booking"}
           </button>
         </form>
       )}

@@ -28,5 +28,6 @@ Thumbs.db
 OVERNIGHT_FIX_REPORT.md
 SETUP.html
 .mcp.json
+tests/audit-artifacts/
 
 /src/generated/prisma

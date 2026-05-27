@@ -22,6 +22,49 @@ import {
 import { prisma } from "./db";
 import { sendBarberNotification, sendBookingConfirmation } from "./email";
 
+const APPOINTMENT_OVERLAP_CONSTRAINT = "appointment_no_overlap_active";
+
+export class BookingConflictError extends Error {
+  statusCode = 409;
+
+  constructor(message = "That time is no longer available.") {
+    super(message);
+    this.name = "BookingConflictError";
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isAppointmentOverlapDatabaseError(error: unknown) {
+  const pending: unknown[] = [error];
+  const seen = new Set<object>();
+
+  while (pending.length > 0) {
+    const current = pending.pop();
+    if (!isRecord(current)) continue;
+    if (seen.has(current)) continue;
+    seen.add(current);
+
+    const code = typeof current.code === "string" ? current.code : "";
+    const constraint = typeof current.constraint === "string" ? current.constraint : "";
+    const message = typeof current.message === "string" ? current.message : "";
+    const detail = typeof current.detail === "string" ? current.detail : "";
+
+    if (code === "23P01") return true;
+    if (constraint === APPOINTMENT_OVERLAP_CONSTRAINT) return true;
+    if (message.includes(APPOINTMENT_OVERLAP_CONSTRAINT)) return true;
+    if (detail.includes(APPOINTMENT_OVERLAP_CONSTRAINT)) return true;
+
+    if ("cause" in current) pending.push(current.cause);
+    if ("meta" in current) pending.push(current.meta);
+    if ("originalError" in current) pending.push(current.originalError);
+  }
+
+  return false;
+}
+
 export type StoreSnapshot = {
   barbers: BarberProfile[];
   services: Service[];
@@ -121,6 +164,39 @@ export async function getAnyAvailableSlot(
   return all.find((s) => s.time === time && s.available);
 }
 
+type AppointmentConflictClient = Pick<typeof prisma, "appointment">;
+
+async function hasAppointmentConflict(
+  client: AppointmentConflictClient,
+  input: {
+    barberId: string;
+    date: string;
+    startTime: string;
+    endTime: string;
+    excludeAppointmentId?: string;
+  }
+) {
+  const requestedStart = timeToMinutes(input.startTime);
+  const requestedEnd = timeToMinutes(input.endTime);
+
+  const appointments = await client.appointment.findMany({
+    where: {
+      barberId: input.barberId,
+      date: input.date,
+      status: { notIn: ["cancelled", "no_show"] },
+      ...(input.excludeAppointmentId
+        ? { id: { not: input.excludeAppointmentId } }
+        : {})
+    }
+  });
+
+  return appointments.some((appointment) => {
+    const existingStart = timeToMinutes(appointment.startTime);
+    const existingEnd = timeToMinutes(appointment.endTime);
+    return requestedStart < existingEnd && requestedEnd > existingStart;
+  });
+}
+
 function isSlotTaken(appointments: Appointment[], barberId: string, time: string): boolean {
   const start = timeToMinutes(time);
   return appointments.some((appt) => {
@@ -180,45 +256,71 @@ export async function createBooking(input: {
   if (!service) throw new Error("Service was not found.");
 
   const slot = await getAnyAvailableSlot(input.date, input.startTime, input.barberId);
-  if (!slot) throw new Error("That time is no longer available.");
+  if (!slot) throw new BookingConflictError();
 
   const normalized = normalizePhone(input.customerPhone);
-  const customer = await prisma.customer.upsert({
-    where: { phone: normalized },
-    update: {
-      name: input.customerName,
-      email: input.customerEmail,
-      visitCount: { increment: 1 },
-      lastVisit: input.date
-    },
-    create: {
-      name: input.customerName,
-      phone: normalized,
-      email: input.customerEmail,
-      preferredBarberId: slot.barberId,
-      visitCount: 1,
-      lastVisit: input.date,
-      createdAt: new Date().toISOString()
-    }
-  });
+  const appointmentEndTime = addMinutes(input.startTime, service.durationMinutes);
+  const createdAt = new Date().toISOString();
 
-  const appointment = await prisma.appointment.create({
-    data: {
-      customerId: customer.id,
-      customerName: input.customerName,
-      customerPhone: input.customerPhone,
-      customerEmail: input.customerEmail,
-      barberId: slot.barberId,
-      serviceId: service.id,
-      date: input.date,
-      startTime: input.startTime,
-      endTime: addMinutes(input.startTime, service.durationMinutes),
-      status: input.source === "walk_in" ? "arrived" : "booked",
-      source: input.source ?? "online",
-      notes: input.notes,
-      createdAt: new Date().toISOString()
+  let appointment: Appointment;
+
+  try {
+    appointment = await prisma.$transaction(async (tx) => {
+      const conflict = await hasAppointmentConflict(tx, {
+        barberId: slot.barberId,
+        date: input.date,
+        startTime: input.startTime,
+        endTime: appointmentEndTime
+      });
+
+      if (conflict) {
+        throw new BookingConflictError();
+      }
+
+      const customer = await tx.customer.upsert({
+        where: { phone: normalized },
+        update: {
+          name: input.customerName,
+          email: input.customerEmail,
+          visitCount: { increment: 1 },
+          lastVisit: input.date,
+          preferredBarberId: slot.barberId
+        },
+        create: {
+          name: input.customerName,
+          phone: normalized,
+          email: input.customerEmail,
+          preferredBarberId: slot.barberId,
+          visitCount: 1,
+          lastVisit: input.date,
+          createdAt
+        }
+      });
+
+      return tx.appointment.create({
+        data: {
+          customerId: customer.id,
+          customerName: input.customerName,
+          customerPhone: input.customerPhone,
+          customerEmail: input.customerEmail,
+          barberId: slot.barberId,
+          serviceId: service.id,
+          date: input.date,
+          startTime: input.startTime,
+          endTime: appointmentEndTime,
+          status: input.source === "walk_in" ? "arrived" : "booked",
+          source: input.source ?? "online",
+          notes: input.notes,
+          createdAt
+        }
+      }) as unknown as Appointment;
+    });
+  } catch (error) {
+    if (isAppointmentOverlapDatabaseError(error)) {
+      throw new BookingConflictError();
     }
-  }) as unknown as Appointment;
+    throw error;
+  }
 
   const barber = await prisma.barberProfile.findUnique({ where: { id: slot.barberId } });
 
@@ -267,13 +369,22 @@ export async function updateAppointment(
     if (!available.length) throw new Error("The rescheduled time is not available.");
   }
 
-  const updated = await prisma.appointment.update({
-    where: { id },
-    data: {
-      ...input,
-      endTime: addMinutes(nextTime, service?.durationMinutes ?? 30)
+  let updated: Appointment;
+
+  try {
+    updated = await prisma.appointment.update({
+      where: { id },
+      data: {
+        ...input,
+        endTime: addMinutes(nextTime, service?.durationMinutes ?? 30)
+      }
+    }) as unknown as Appointment;
+  } catch (error) {
+    if (isAppointmentOverlapDatabaseError(error)) {
+      throw new BookingConflictError("The rescheduled time is no longer available.");
     }
-  }) as unknown as Appointment;
+    throw error;
+  }
 
   if (moved) {
     await prisma.notificationLog.create({
