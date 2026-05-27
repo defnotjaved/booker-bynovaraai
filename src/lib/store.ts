@@ -156,9 +156,10 @@ export async function getAnyAvailableSlot(
   time: string,
   preferredBarberId?: string
 ): Promise<Slot | undefined> {
-  const preferred = await getAvailableSlots(date, preferredBarberId);
-  const found = preferred.find((s) => s.time === time && s.available);
-  if (found) return found;
+  if (preferredBarberId) {
+    const preferred = await getAvailableSlots(date, preferredBarberId);
+    return preferred.find((s) => s.time === time && s.available);
+  }
 
   const all = await getAvailableSlots(date);
   return all.find((s) => s.time === time && s.available);
