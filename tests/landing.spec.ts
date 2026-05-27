@@ -34,7 +34,7 @@ test("landing page renders and stays usable across viewports", async ({ page }, 
     if (hasMenu) {
       await menuButton.click();
       await expect(adminLoginLink).toBeVisible();
-      const closeButton = page.getByRole("button", { name: /close menu/i }).first();
+      const closeButton = page.locator(".mobile-drawer").getByRole("button", { name: /close menu/i });
       if (await closeButton.isVisible().catch(() => false)) {
         await closeButton.click();
       }
