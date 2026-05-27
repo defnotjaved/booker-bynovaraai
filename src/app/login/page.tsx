@@ -4,6 +4,7 @@ import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { LogIn, Scissors } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 function LoginForm() {
   const router = useRouter();
@@ -41,14 +42,14 @@ function LoginForm() {
         <div className="login-glow" />
 
         <div className="login-logo fade-up">
-          <Scissors size={36} />
+          <BrandLogo
+            priority
+            className="brand-logo-login-hero"
+            sizes="(max-width: 480px) 196px, 232px"
+          />
         </div>
 
         <div className="fade-up-1" style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
-          <div className="login-brand-title">
-            <span style={{ color: "var(--ink-3)" }}>Icon</span>
-            <span style={{ color: "var(--ink)" }}>Book</span>
-          </div>
           <div
             style={{
               fontSize: 15,
@@ -143,25 +144,12 @@ function LoginForm() {
         <div className="login-card fade-up">
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-              <div
-                style={{
-                  width: 40,
-                  height: 40,
-                  borderRadius: "var(--radius-md)",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Scissors size={20} />
-              </div>
+              <BrandLogo
+                className="brand-logo-login-card"
+                sizes="(max-width: 480px) 124px, 144px"
+              />
               <div>
-                <div style={{ fontWeight: 800, fontSize: 16 }}>
-                  <span style={{ color: "var(--ink-3)" }}>Icon</span>
-                  <span>Book</span>
-                </div>
+                <div style={{ fontWeight: 800, fontSize: 16 }}>Staff Portal</div>
                 <div style={{ fontSize: 12, color: "var(--ink-3)" }}>Icon Barbers</div>
               </div>
             </div>
@@ -206,7 +194,7 @@ function LoginForm() {
               style={{ marginTop: 4 }}
             >
               <LogIn size={18} />
-              {loading ? "Signing in…" : "Sign in to IconBook"}
+              {loading ? "Signing in…" : "Sign in to Icon Barbers"}
             </button>
           </form>
 

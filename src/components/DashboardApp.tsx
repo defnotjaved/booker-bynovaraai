@@ -28,6 +28,7 @@ import {
   updateService,
   updateSettings
 } from "./api";
+import { BrandLogo } from "./BrandLogo";
 import { TopBar } from "./TopBar";
 import type { Appointment, AppointmentStatus, Role, Service } from "@/lib/types";
 import { formatMoney, formatTime, generateTimes, todayString } from "@/lib/time";
@@ -171,15 +172,8 @@ export function DashboardApp({ view }: DashboardAppProps) {
             display: "flex", alignItems: "center", gap: 8,
             padding: "16px 12px 14px",
             borderBottom: "1px solid var(--line)", marginBottom: 6,
-            fontFamily: "var(--font-heading)", fontSize: 16, fontWeight: 800,
           }}>
-            <span className="brand-icon" style={{ width: 28, height: 28, flexShrink: 0 }}>
-              <Scissors size={13} />
-            </span>
-            <span>
-              <span style={{ color: "var(--ink-3)" }}>Icon</span>
-              <span style={{ color: "var(--ink)" }}>Book</span>
-            </span>
+            <BrandLogo className="brand-logo-sidebar" sizes="148px" />
           </div>
 
           <div className="sidebar-label">Navigation</div>

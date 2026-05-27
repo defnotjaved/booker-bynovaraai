@@ -9,12 +9,12 @@ import {
   LogIn,
   LogOut,
   Menu,
-  Scissors,
   Settings,
   X,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
+import { BrandLogo } from "./BrandLogo";
 
 type TopBarVariant = "public" | "dashboard";
 
@@ -87,14 +87,12 @@ export function TopBar({
   return (
     <>
       <header className={`topbar${scrolled ? " scrolled" : ""}`}>
-        <Link className="brand" href="/">
-          <span className="brand-icon">
-            <Scissors size={16} />
-          </span>
-          <span>
-            <span className="brand-dim">Icon</span>
-            <span className="brand-bold">Book</span>
-          </span>
+        <Link className="brand" href="/" aria-label="Icon Barbers">
+          <BrandLogo
+            priority
+            className="brand-logo-topbar"
+            sizes="(max-width: 480px) 128px, (max-width: 900px) 146px, 168px"
+          />
         </Link>
 
         {variant === "public" ? (
@@ -188,15 +186,9 @@ export function TopBar({
           className={`mobile-drawer${mobileMenuOpen ? " open" : ""}`}
           onClick={(event) => event.stopPropagation()}
         >
-          <div className="mobile-drawer-header">
-            <div className="brand">
-              <span className="brand-icon">
-                <Scissors size={16} />
-              </span>
-              <span>
-                <span className="brand-dim">Icon</span>
-                <span className="brand-bold">Book</span>
-              </span>
+            <div className="mobile-drawer-header">
+            <div className="brand" aria-label="Icon Barbers">
+              <BrandLogo className="brand-logo-drawer" sizes="144px" />
             </div>
             <button
               className="btn btn-ghost btn-icon"

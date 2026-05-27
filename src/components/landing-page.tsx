@@ -1,7 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useEffect, useRef } from "react";
 import { TopBar } from "@/components/TopBar";
+import { BrandLogo } from "@/components/BrandLogo";
 import { BookingModal } from "@/components/ui/booking-modal";
 import { MapPin, Phone, Clock, Star, Scissors, CheckCircle2 } from "lucide-react";
 import type { Service } from "@/lib/types";
@@ -78,8 +80,27 @@ const EYEBROW: React.CSSProperties = {
 };
 
 export function LandingPage({ barbers, services }: { barbers: Barber[]; services: Service[] }) {
+  const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+
   const scrollToBook = () =>
     document.getElementById("book")?.scrollIntoView({ behavior: "smooth" });
+
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    const applyPlaybackRate = () => {
+      video.playbackRate = 0.6;
+      video.defaultPlaybackRate = 0.6;
+    };
+
+    applyPlaybackRate();
+    video.addEventListener("loadeddata", applyPlaybackRate);
+
+    return () => {
+      video.removeEventListener("loadeddata", applyPlaybackRate);
+    };
+  }, []);
 
   return (
     <div style={{ background: "var(--bg)", color: "var(--ink)", overflowX: "hidden" }}>
@@ -279,6 +300,7 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
                 </span>
               </div>
               <video
+                ref={heroVideoRef}
                 autoPlay
                 muted
                 loop
@@ -716,13 +738,7 @@ export function LandingPage({ barbers, services }: { barbers: Barber[]; services
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span className="brand-icon" style={{ width: 30, height: 30 }}>
-              <Scissors size={14} />
-            </span>
-            <span style={{ fontFamily: "var(--font-heading)", fontWeight: 800, fontSize: 16 }}>
-              <span style={{ color: "var(--ink-3)" }}>Icon</span>
-              <span style={{ color: "var(--ink)" }}>Book</span>
-            </span>
+            <BrandLogo className="brand-logo-footer" sizes="(max-width: 480px) 132px, 152px" />
           </div>
           <nav style={{ display: "flex", gap: 20, flexWrap: "wrap" }}>
             {[

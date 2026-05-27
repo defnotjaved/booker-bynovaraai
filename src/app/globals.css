@@ -382,6 +382,23 @@ textarea { height: auto; min-height: 80px; padding: 12px 14px; resize: vertical;
   font-family: var(--font-heading);
   font-size: 18px; font-weight: 800; letter-spacing: -0.025em; flex-shrink: 0;
 }
+.brand-logo {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.brand-logo-image {
+  object-fit: contain;
+  transform: scale(1.18);
+  transform-origin: center;
+}
+.brand-logo-topbar { width: 168px; height: 56px; }
+.brand-logo-drawer { width: 144px; height: 48px; }
+.brand-logo-sidebar { width: 148px; height: 52px; }
+.brand-logo-footer { width: 152px; height: 52px; }
+.brand-logo-login-hero { width: 232px; height: 80px; }
+.brand-logo-login-card { width: 144px; height: 50px; }
 .brand-icon {
   width: 32px; height: 32px; border-radius: var(--radius-md);
   background: var(--accent); color: #fff;
@@ -753,10 +770,8 @@ textarea { height: auto; min-height: 80px; padding: 12px 14px; resize: vertical;
   pointer-events:none;
 }
 .login-logo {
-  width:80px; height:80px; border-radius:22px;
-  background:var(--accent); color:#fff;
+  width:232px; height:80px;
   display:flex; align-items:center; justify-content:center;
-  box-shadow:0 0 40px rgba(244,123,32,0.4), var(--shadow-lg);
   position:relative; z-index:1;
 }
 .login-brand-title {
@@ -930,6 +945,7 @@ textarea { height: auto; min-height: 80px; padding: 12px 14px; resize: vertical;
   .topbar-desktop-only { display: none; }
   .topbar-mobile-only { display: inline-flex; }
   .dash-main { padding: 20px 20px 48px; }
+  .brand-logo-topbar { width: 146px; height: 48px; }
 }
 @media (max-width: 640px) {
   .topbar .nav { display: none; }
@@ -949,4 +965,8 @@ textarea { height: auto; min-height: 80px; padding: 12px 14px; resize: vertical;
   .time-slot { font-size: 12px; min-height: 44px; }
   .btn.btn-primary.btn-sm.btn-glow { padding: 0 14px; }
   .topbar-right { gap: 8px; }
+  .brand-logo-topbar { width: 128px; height: 42px; }
+  .brand-logo-login-hero { width: 196px; height: 68px; }
+  .brand-logo-login-card { width: 124px; height: 44px; }
+  .brand-logo-footer { width: 132px; height: 46px; }
 }

@@ -24,6 +24,7 @@ Thumbs.db
 
 # Dev artifacts / screenshots
 *.png
+!public/assets/icon-barbers-logo.png
 *.log
 OVERNIGHT_FIX_REPORT.md
 SETUP.html
